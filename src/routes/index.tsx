@@ -4,7 +4,9 @@ import html2canvas from "html2canvas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Download, FileText, LayoutDashboard, FolderOpen, RotateCcw } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
+import { AppSidebar } from "@/components/AppSidebar";
+import { saveReport } from "@/lib/savedReports";
 
 export const Route = createFileRoute("/")({
   component: CreateReport,
