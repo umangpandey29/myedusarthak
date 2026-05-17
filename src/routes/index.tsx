@@ -87,29 +87,33 @@ function CreateReport() {
   const download = async () => {
     if (!sheetRef.current) return;
     const canvas = await html2canvas(sheetRef.current, { scale: 2, backgroundColor: "#fef9c3" });
+    const dataUrl = canvas.toDataURL("image/png");
+    const fileName = `${student.name || "marksheet"}-${Date.now()}.png`;
     const link = document.createElement("a");
-    link.download = `${student.name || "marksheet"}.png`;
-    link.href = canvas.toDataURL("image/png");
+    link.download = fileName;
+    link.href = dataUrl;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
+    try {
+      saveReport({
+        id: crypto.randomUUID(),
+        name: student.name,
+        classSec: student.classSec,
+        rollNo: student.rollNo,
+        session: student.session,
+        percentage,
+        createdAt: Date.now(),
+        image: dataUrl,
+      });
+    } catch (e) {
+      console.error("Failed to save report locally", e);
+    }
   };
 
   return (
     <div className="min-h-screen flex">
-      {/* Sidebar */}
-      <aside className="w-60 bg-card border-r border-border p-4 hidden lg:flex flex-col gap-1">
-        <div className="flex items-center gap-2 mb-6 px-2">
-          <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
-            <FileText className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <div className="font-bold text-sm">MyEduSarthak</div>
-            <div className="text-[10px] text-muted-foreground uppercase tracking-wider">Report System</div>
-          </div>
-        </div>
-        <NavItem icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" />
-        <NavItem icon={<FileText className="w-4 h-4" />} label="Create Report" active />
-        <NavItem icon={<FolderOpen className="w-4 h-4" />} label="Saved Reports" />
-      </aside>
+      <AppSidebar />
 
       {/* Main */}
       <main className="flex-1 p-6">
