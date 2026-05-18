@@ -258,7 +258,8 @@ function CreateReport() {
                     <th colSpan={6}>अर्धवार्षिक परीक्षा</th>
                     <th colSpan={6}>वार्षिक परीक्षा</th>
                     <th colSpan={2}>सम्पूर्ण योग</th>
-                    <th rowSpan={2} style={{ width: 70 }}>परीक्षाफल / अन्य</th>
+                    <th rowSpan={2} style={{ width: 50 }}>ग्रेड</th>
+                    <th rowSpan={2} style={{ width: 110 }}>परीक्षाफल / अन्य</th>
                   </tr>
                   <tr>
                     <th className="vertical">प्रथम सत्रीय परीक्षा</th>
@@ -296,7 +297,21 @@ function CreateReport() {
                       <td className="totals">{marks[i].aMax}</td>
                       <td className="totals">{rows[i].totalObtained || ""}</td>
                       <td className="totals">{rows[i].totalMax}</td>
-                      <td>{i === KHEL_INDEX ? khelGrade : marks[i].grade}</td>
+                      <td className="font-semibold">{i === KHEL_INDEX ? khelGrade : marks[i].grade}</td>
+                      {i === 0 && (
+                        <td
+                          rowSpan={SUBJECTS.length}
+                          className="align-top text-[10px] leading-relaxed text-left p-2"
+                          style={{ verticalAlign: "top" }}
+                        >
+                          <div>उत्तीर्ण</div>
+                          <div className="mt-2">अनुत्तीर्ण</div>
+                          <div className="mt-2">कक्षा में स्थान</div>
+                          <div className="mt-2">कृपांक</div>
+                          <div className="mt-2">उपस्थिति अर्धवार्षिक</div>
+                          <div className="mt-2">उपस्थिति वार्षिक</div>
+                        </td>
+                      )}
                     </tr>
                   ))}
                   <tr>
@@ -309,7 +324,7 @@ function CreateReport() {
                     <td className="totals font-bold">{grand.annMax}</td>
                     <td className="totals font-bold">{grand.obtained || ""}</td>
                     <td className="totals font-bold">{grand.max}</td>
-                    <td className="totals font-bold">{percentage}%</td>
+                    <td colSpan={2} className="totals font-bold">{percentage}%</td>
                   </tr>
                 </tbody>
               </table>
