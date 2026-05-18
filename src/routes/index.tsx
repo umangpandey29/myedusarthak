@@ -81,10 +81,24 @@ function CreateReport() {
     return { halfObtained, annObtained, totalObtained, totalMax };
   }), [marks]);
 
+  // Auto-grade for Khel & Swasthya
+  const khelGrade = useMemo(
+    () => autoGrade(rows[KHEL_INDEX].totalObtained, rows[KHEL_INDEX].totalMax),
+    [rows]
+  );
+
+  // Yog/Subtotal/Percentage exclude Khel & Swasthya
   const grand = useMemo(() => rows.reduce(
-    (acc, r) => ({ obtained: acc.obtained + r.totalObtained, max: acc.max + r.totalMax }),
-    { obtained: 0, max: 0 }
-  ), [rows]);
+    (acc, r, idx) => idx === KHEL_INDEX ? acc : ({
+      obtained: acc.obtained + r.totalObtained,
+      max: acc.max + r.totalMax,
+      halfObtained: acc.halfObtained + r.halfObtained,
+      halfMax: acc.halfMax + n(marks[idx].hMax),
+      annObtained: acc.annObtained + r.annObtained,
+      annMax: acc.annMax + n(marks[idx].aMax),
+    }),
+    { obtained: 0, max: 0, halfObtained: 0, halfMax: 0, annObtained: 0, annMax: 0 }
+  ), [rows, marks]);
 
   const percentage = grand.max > 0 ? ((grand.obtained / grand.max) * 100).toFixed(2) : "0.00";
 
