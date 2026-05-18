@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import html2canvas from "html2canvas";
+import { toPng } from "html-to-image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -115,28 +115,36 @@ function CreateReport() {
 
   const download = async () => {
     if (!sheetRef.current) return;
-    const canvas = await html2canvas(sheetRef.current, { scale: 2, backgroundColor: "#fef9c3" });
-    const dataUrl = canvas.toDataURL("image/png");
-    const fileName = `${student.name || "marksheet"}-${Date.now()}.png`;
-    const link = document.createElement("a");
-    link.download = fileName;
-    link.href = dataUrl;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
     try {
-      saveReport({
-        id: crypto.randomUUID(),
-        name: student.name,
-        classSec: student.classSec,
-        rollNo: student.rollNo,
-        session: student.session,
-        percentage,
-        createdAt: Date.now(),
-        image: dataUrl,
+      const dataUrl = await toPng(sheetRef.current, {
+        pixelRatio: 2,
+        backgroundColor: "#fef9c3",
+        cacheBust: true,
       });
-    } catch (e) {
-      console.error("Failed to save report locally", e);
+      const fileName = `${student.name || "marksheet"}-${Date.now()}.png`;
+      const link = document.createElement("a");
+      link.download = fileName;
+      link.href = dataUrl;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      try {
+        saveReport({
+          id: crypto.randomUUID(),
+          name: student.name,
+          classSec: student.classSec,
+          rollNo: student.rollNo,
+          session: student.session,
+          percentage,
+          createdAt: Date.now(),
+          image: dataUrl,
+        });
+      } catch (e) {
+        console.error("Failed to save report locally", e);
+      }
+    } catch (err) {
+      console.error("Download failed", err);
+      alert("Could not generate the report image. Please try again.");
     }
   };
 
