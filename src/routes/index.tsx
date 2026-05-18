@@ -287,17 +287,17 @@ function CreateReport() {
                       <td className="totals">{marks[i].aMax}</td>
                       <td className="totals">{rows[i].totalObtained || ""}</td>
                       <td className="totals">{rows[i].totalMax}</td>
-                      <td>{marks[i].grade}</td>
+                      <td>{i === KHEL_INDEX ? khelGrade : marks[i].grade}</td>
                     </tr>
                   ))}
                   <tr>
                     <td colSpan={2} className="font-bold">योग</td>
                     <td colSpan={4}></td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + r.halfObtained, 0) || ""}</td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + n(marks[rows.indexOf(r)]?.hMax || "0"), 0)}</td>
+                    <td className="totals font-bold">{grand.halfObtained || ""}</td>
+                    <td className="totals font-bold">{grand.halfMax}</td>
                     <td colSpan={4}></td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + r.annObtained, 0) || ""}</td>
-                    <td className="totals font-bold">{marks.reduce((a, m) => a + n(m.aMax), 0)}</td>
+                    <td className="totals font-bold">{grand.annObtained || ""}</td>
+                    <td className="totals font-bold">{grand.annMax}</td>
                     <td className="totals font-bold">{grand.obtained || ""}</td>
                     <td className="totals font-bold">{grand.max}</td>
                     <td className="totals font-bold">{percentage}%</td>
