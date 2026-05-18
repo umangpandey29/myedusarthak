@@ -49,6 +49,21 @@ const n = (v: string) => {
   return isNaN(x) ? 0 : x;
 };
 
+// Index of "खेल और स्वास्थ्य" — auto-graded, excluded from totals/percentage
+const KHEL_INDEX = 8;
+
+const autoGrade = (obtained: number, max: number): string => {
+  if (max <= 0) return "";
+  const pct = (obtained / max) * 100;
+  if (pct >= 91) return "A1";
+  if (pct >= 81) return "A2";
+  if (pct >= 71) return "B1";
+  if (pct >= 61) return "B2";
+  if (pct >= 51) return "C1";
+  if (pct >= 33) return "C2";
+  return "E";
+};
+
 function CreateReport() {
   const [student, setStudent] = useState({
     name: "", father: "", mother: "", classSec: "", rollNo: "",
