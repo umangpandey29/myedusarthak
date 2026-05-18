@@ -49,6 +49,21 @@ const n = (v: string) => {
   return isNaN(x) ? 0 : x;
 };
 
+// Index of "खेल और स्वास्थ्य" — auto-graded, excluded from totals/percentage
+const KHEL_INDEX = 8;
+
+const autoGrade = (obtained: number, max: number): string => {
+  if (max <= 0) return "";
+  const pct = (obtained / max) * 100;
+  if (pct >= 91) return "A1";
+  if (pct >= 81) return "A2";
+  if (pct >= 71) return "B1";
+  if (pct >= 61) return "B2";
+  if (pct >= 51) return "C1";
+  if (pct >= 33) return "C2";
+  return "E";
+};
+
 function CreateReport() {
   const [student, setStudent] = useState({
     name: "", father: "", mother: "", classSec: "", rollNo: "",
@@ -66,10 +81,24 @@ function CreateReport() {
     return { halfObtained, annObtained, totalObtained, totalMax };
   }), [marks]);
 
+  // Auto-grade for Khel & Swasthya
+  const khelGrade = useMemo(
+    () => autoGrade(rows[KHEL_INDEX].totalObtained, rows[KHEL_INDEX].totalMax),
+    [rows]
+  );
+
+  // Yog/Subtotal/Percentage exclude Khel & Swasthya
   const grand = useMemo(() => rows.reduce(
-    (acc, r) => ({ obtained: acc.obtained + r.totalObtained, max: acc.max + r.totalMax }),
-    { obtained: 0, max: 0 }
-  ), [rows]);
+    (acc, r, idx) => idx === KHEL_INDEX ? acc : ({
+      obtained: acc.obtained + r.totalObtained,
+      max: acc.max + r.totalMax,
+      halfObtained: acc.halfObtained + r.halfObtained,
+      halfMax: acc.halfMax + n(marks[idx].hMax),
+      annObtained: acc.annObtained + r.annObtained,
+      annMax: acc.annMax + n(marks[idx].aMax),
+    }),
+    { obtained: 0, max: 0, halfObtained: 0, halfMax: 0, annObtained: 0, annMax: 0 }
+  ), [rows, marks]);
 
   const percentage = grand.max > 0 ? ((grand.obtained / grand.max) * 100).toFixed(2) : "0.00";
 
@@ -258,17 +287,17 @@ function CreateReport() {
                       <td className="totals">{marks[i].aMax}</td>
                       <td className="totals">{rows[i].totalObtained || ""}</td>
                       <td className="totals">{rows[i].totalMax}</td>
-                      <td>{marks[i].grade}</td>
+                      <td>{i === KHEL_INDEX ? khelGrade : marks[i].grade}</td>
                     </tr>
                   ))}
                   <tr>
                     <td colSpan={2} className="font-bold">योग</td>
                     <td colSpan={4}></td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + r.halfObtained, 0) || ""}</td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + n(marks[rows.indexOf(r)]?.hMax || "0"), 0)}</td>
+                    <td className="totals font-bold">{grand.halfObtained || ""}</td>
+                    <td className="totals font-bold">{grand.halfMax}</td>
                     <td colSpan={4}></td>
-                    <td className="totals font-bold">{rows.reduce((a, r) => a + r.annObtained, 0) || ""}</td>
-                    <td className="totals font-bold">{marks.reduce((a, m) => a + n(m.aMax), 0)}</td>
+                    <td className="totals font-bold">{grand.annObtained || ""}</td>
+                    <td className="totals font-bold">{grand.annMax}</td>
                     <td className="totals font-bold">{grand.obtained || ""}</td>
                     <td className="totals font-bold">{grand.max}</td>
                     <td className="totals font-bold">{percentage}%</td>
