@@ -116,6 +116,7 @@ function CreateReport() {
   const download = async () => {
     if (!sheetRef.current) return;
     try {
+      const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(sheetRef.current, {
         pixelRatio: 2,
         backgroundColor: "#fef9c3",
