@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
-import { toPng } from "html-to-image";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,6 +116,7 @@ function CreateReport() {
   const download = async () => {
     if (!sheetRef.current) return;
     try {
+      const { toPng } = await import("html-to-image");
       const dataUrl = await toPng(sheetRef.current, {
         pixelRatio: 2,
         backgroundColor: "#fef9c3",
