@@ -1,8 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { FileText, LayoutDashboard, FolderOpen } from "lucide-react";
+import { FileText, LayoutDashboard, FolderOpen, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export function AppSidebar() {
   const { pathname } = useLocation();
+  const { user, signOut } = useAuth();
   const items = [
     { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
     { to: "/", label: "Create Report", icon: <FileText className="w-4 h-4" /> },
@@ -35,6 +37,19 @@ export function AppSidebar() {
           </Link>
         );
       })}
+      <div className="mt-auto border-t border-border pt-3">
+        {user && (
+          <div className="px-3 pb-2 text-[11px] text-muted-foreground truncate" title={user.email ?? ""}>
+            {user.email}
+          </div>
+        )}
+        <button
+          onClick={() => signOut()}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-muted-foreground hover:bg-secondary"
+        >
+          <LogOut className="w-4 h-4" />Sign out
+        </button>
+      </div>
     </aside>
   );
 }

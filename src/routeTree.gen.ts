@@ -10,12 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ReportMiddleRouteImport } from './routes/report.middle'
+import { Route as ReportHighRouteImport } from './routes/report.high'
 
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -28,35 +36,76 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportMiddleRoute = ReportMiddleRouteImport.update({
+  id: '/report/middle',
+  path: '/report/middle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportHighRoute = ReportHighRouteImport.update({
+  id: '/report/high',
+  path: '/report/high',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
+  '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
+  '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
+  '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/saved'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/saved'
-  id: '__root__' | '/' | '/dashboard' | '/saved'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  LoginRoute: typeof LoginRoute
   SavedRoute: typeof SavedRoute
+  ReportHighRoute: typeof ReportHighRoute
+  ReportMiddleRoute: typeof ReportMiddleRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -66,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -82,24 +138,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report/middle': {
+      id: '/report/middle'
+      path: '/report/middle'
+      fullPath: '/report/middle'
+      preLoaderRoute: typeof ReportMiddleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report/high': {
+      id: '/report/high'
+      path: '/report/high'
+      fullPath: '/report/high'
+      preLoaderRoute: typeof ReportHighRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  LoginRoute: LoginRoute,
   SavedRoute: SavedRoute,
+  ReportHighRoute: ReportHighRoute,
+  ReportMiddleRoute: ReportMiddleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
