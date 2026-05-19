@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReportMiddleRouteImport } from './routes/report.middle'
+import { Route as ReportHighRouteImport } from './routes/report.high'
 
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
@@ -40,12 +41,18 @@ const ReportMiddleRoute = ReportMiddleRouteImport.update({
   path: '/report/middle',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportHighRoute = ReportHighRouteImport.update({
+  id: '/report/high',
+  path: '/report/high',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,34 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/login': typeof LoginRoute
   '/saved': typeof SavedRoute
+  '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/login' | '/saved' | '/report/middle'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/login' | '/saved' | '/report/middle'
-  id: '__root__' | '/' | '/dashboard' | '/login' | '/saved' | '/report/middle'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/login'
+    | '/saved'
+    | '/report/high'
+    | '/report/middle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +104,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   SavedRoute: typeof SavedRoute
+  ReportHighRoute: typeof ReportHighRoute
   ReportMiddleRoute: typeof ReportMiddleRoute
 }
 
@@ -116,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportMiddleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report/high': {
+      id: '/report/high'
+      path: '/report/high'
+      fullPath: '/report/high'
+      preLoaderRoute: typeof ReportHighRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -124,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   SavedRoute: SavedRoute,
+  ReportHighRoute: ReportHighRoute,
   ReportMiddleRoute: ReportMiddleRoute,
 }
 export const routeTree = rootRouteImport
