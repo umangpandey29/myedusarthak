@@ -18,6 +18,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AiReportsIndexRouteImport } from './routes/ai-reports.index'
 import { Route as ReportMiddleRouteImport } from './routes/report.middle'
 import { Route as ReportHighRouteImport } from './routes/report.high'
+import { Route as AiReportsMiddleRouteImport } from './routes/ai-reports.middle'
+import { Route as AiReportsHighRouteImport } from './routes/ai-reports.high'
 
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
@@ -64,6 +66,16 @@ const ReportHighRoute = ReportHighRouteImport.update({
   path: '/report/high',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiReportsMiddleRoute = AiReportsMiddleRouteImport.update({
+  id: '/ai-reports/middle',
+  path: '/ai-reports/middle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiReportsHighRoute = AiReportsHighRouteImport.update({
+  id: '/ai-reports/high',
+  path: '/ai-reports/high',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -72,6 +84,8 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
   '/ai-reports/': typeof AiReportsIndexRoute
@@ -83,6 +97,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
   '/ai-reports': typeof AiReportsIndexRoute
@@ -95,6 +111,8 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
   '/ai-reports/': typeof AiReportsIndexRoute
@@ -108,6 +126,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
     | '/ai-reports/'
@@ -119,6 +139,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
     | '/ai-reports'
@@ -130,6 +152,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
     | '/ai-reports/'
@@ -142,6 +166,8 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
+  AiReportsHighRoute: typeof AiReportsHighRoute
+  AiReportsMiddleRoute: typeof AiReportsMiddleRoute
   ReportHighRoute: typeof ReportHighRoute
   ReportMiddleRoute: typeof ReportMiddleRoute
   AiReportsIndexRoute: typeof AiReportsIndexRoute
@@ -212,6 +238,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportHighRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-reports/middle': {
+      id: '/ai-reports/middle'
+      path: '/ai-reports/middle'
+      fullPath: '/ai-reports/middle'
+      preLoaderRoute: typeof AiReportsMiddleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-reports/high': {
+      id: '/ai-reports/high'
+      path: '/ai-reports/high'
+      fullPath: '/ai-reports/high'
+      preLoaderRoute: typeof AiReportsHighRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -222,6 +262,8 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
+  AiReportsHighRoute: AiReportsHighRoute,
+  AiReportsMiddleRoute: AiReportsMiddleRoute,
   ReportHighRoute: ReportHighRoute,
   ReportMiddleRoute: ReportMiddleRoute,
   AiReportsIndexRoute: AiReportsIndexRoute,
