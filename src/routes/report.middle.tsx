@@ -7,42 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { saveCloudReport } from "@/lib/cloudReports";
+import { MarksheetMiddle } from "@/components/MarksheetMiddle";
+import {
+  MIDDLE_SUBJECTS as SUBJECTS, MIDDLE_KHEL_INDEX as KHEL_INDEX,
+  emptyMiddle as emptyMarks, emptyMiddleStudent,
+  type MiddleMarks as SubjectMarks, autoGradeMiddle as autoGrade, num as n,
+} from "@/lib/reportTypes";
 
 export const Route = createFileRoute("/report/middle")({
   component: CreateMiddle,
   head: () => ({ meta: [{ title: "Class 6–8 Report — MyEduSarthak" }] }),
 });
-
-const SUBJECTS = [
-  "हिन्दी एवं अनिवार्य संस्कृत",
-  "गणित",
-  "अंग्रेजी",
-  "सामाजिक विषय",
-  "संस्कृत / उर्दू",
-  "बेसिक क्राफ्ट (कृषि/पशुपालन/उद्योग)",
-  "ऐच्छिक विषय (कला/संगीत/वाणिज्य)",
-  "सामान्य विज्ञान",
-  "खेल और स्वास्थ्य",
-  "पर्यावरणीय अध्ययन",
-  "कम्प्यूटर",
-];
-
-type SubjectMarks = {
-  h1: string; h2: string; hPrac: string; hHalf: string; hMax: string;
-  a1: string; a2: string; aPrac: string; aAnn: string; aMax: string;
-  grade: string;
-};
-const emptyMarks = (): SubjectMarks => ({ h1: "", h2: "", hPrac: "", hHalf: "", hMax: "50", a1: "", a2: "", aPrac: "", aAnn: "", aMax: "50", grade: "" });
-const n = (v: string) => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
-const KHEL_INDEX = 8;
-const autoGrade = (obtained: number, max: number): string => {
-  if (max <= 0) return "";
-  const pct = (obtained / max) * 100;
-  if (pct >= 91) return "A1"; if (pct >= 81) return "A2";
-  if (pct >= 71) return "B1"; if (pct >= 61) return "B2";
-  if (pct >= 51) return "C1"; if (pct >= 33) return "C2";
-  return "E";
-};
 
 function CreateMiddle() {
   const [student, setStudent] = useState({
