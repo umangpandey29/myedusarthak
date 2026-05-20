@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { FileText, LayoutDashboard, FolderOpen, LogOut } from "lucide-react";
+import { FileText, LayoutDashboard, FolderOpen, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export function AppSidebar() {
@@ -8,6 +8,7 @@ export function AppSidebar() {
   const items = [
     { to: "/dashboard", label: "Dashboard", icon: <LayoutDashboard className="w-4 h-4" /> },
     { to: "/", label: "Create Report", icon: <FileText className="w-4 h-4" /> },
+    { to: "/ai-reports", label: "Create AI Reports", icon: <Sparkles className="w-4 h-4" /> },
     { to: "/saved", label: "Saved Reports", icon: <FolderOpen className="w-4 h-4" /> },
   ] as const;
 
@@ -23,7 +24,7 @@ export function AppSidebar() {
         </div>
       </div>
       {items.map((it) => {
-        const active = pathname === it.to;
+        const active = pathname === it.to || (it.to !== "/" && pathname.startsWith(it.to));
         return (
           <Link
             key={it.to}
