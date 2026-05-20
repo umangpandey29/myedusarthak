@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiReportsIndexRouteImport } from './routes/ai-reports.index'
 import { Route as ReportMiddleRouteImport } from './routes/report.middle'
 import { Route as ReportHighRouteImport } from './routes/report.high'
 
@@ -48,6 +49,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiReportsIndexRoute = AiReportsIndexRouteImport.update({
+  id: '/ai-reports/',
+  path: '/ai-reports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportMiddleRoute = ReportMiddleRouteImport.update({
   id: '/report/middle',
   path: '/report/middle',
@@ -68,6 +74,7 @@ export interface FileRoutesByFullPath {
   '/saved': typeof SavedRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports/': typeof AiReportsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/saved': typeof SavedRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports': typeof AiReportsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -89,6 +97,7 @@ export interface FileRoutesById {
   '/saved': typeof SavedRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports/': typeof AiReportsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,6 +110,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -111,6 +121,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports'
   id:
     | '__root__'
     | '/'
@@ -121,6 +132,7 @@ export interface FileRouteTypes {
     | '/saved'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -132,6 +144,7 @@ export interface RootRouteChildren {
   SavedRoute: typeof SavedRoute
   ReportHighRoute: typeof ReportHighRoute
   ReportMiddleRoute: typeof ReportMiddleRoute
+  AiReportsIndexRoute: typeof AiReportsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-reports/': {
+      id: '/ai-reports/'
+      path: '/ai-reports'
+      fullPath: '/ai-reports/'
+      preLoaderRoute: typeof AiReportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report/middle': {
       id: '/report/middle'
       path: '/report/middle'
@@ -204,6 +224,7 @@ const rootRouteChildren: RootRouteChildren = {
   SavedRoute: SavedRoute,
   ReportHighRoute: ReportHighRoute,
   ReportMiddleRoute: ReportMiddleRoute,
+  AiReportsIndexRoute: AiReportsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
