@@ -71,18 +71,21 @@ function RootShell({ children }: { children: React.ReactNode }) {
   );
 }
 
+const PUBLIC_ROUTES = ["/login", "/forgot-password", "/reset-password"];
+
 function AuthGate({ children }: { children: React.ReactNode }) {
   const { session, loading } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isPublic = PUBLIC_ROUTES.includes(pathname);
   useEffect(() => {
     if (loading) return;
-    if (!session && pathname !== "/login") navigate({ to: "/login" });
-  }, [loading, session, pathname, navigate]);
+    if (!session && !isPublic) navigate({ to: "/login" });
+  }, [loading, session, isPublic, navigate]);
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">Loading…</div>;
   }
-  if (!session && pathname !== "/login") return null;
+  if (!session && !isPublic) return null;
   return <>{children}</>;
 }
 

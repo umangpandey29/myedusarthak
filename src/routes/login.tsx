@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
@@ -87,7 +87,12 @@ function LoginPage() {
             <Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <div>
-            <Label className="text-xs">Password</Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Password</Label>
+              {mode === "signin" && (
+                <Link to="/forgot-password" className="text-[11px] text-primary underline">Forgot password?</Link>
+              )}
+            </div>
             <Input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
           {err && <div className="text-xs text-red-600">{err}</div>}

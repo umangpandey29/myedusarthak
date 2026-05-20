@@ -10,20 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SavedRouteImport } from './routes/saved'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AiReportsIndexRouteImport } from './routes/ai-reports.index'
 import { Route as ReportMiddleRouteImport } from './routes/report.middle'
 import { Route as ReportHighRouteImport } from './routes/report.high'
+import { Route as AiReportsMiddleRouteImport } from './routes/ai-reports.middle'
+import { Route as AiReportsHighRouteImport } from './routes/ai-reports.high'
 
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -36,6 +51,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiReportsIndexRoute = AiReportsIndexRouteImport.update({
+  id: '/ai-reports/',
+  path: '/ai-reports/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportMiddleRoute = ReportMiddleRouteImport.update({
   id: '/report/middle',
   path: '/report/middle',
@@ -46,66 +66,111 @@ const ReportHighRoute = ReportHighRouteImport.update({
   path: '/report/high',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiReportsMiddleRoute = AiReportsMiddleRouteImport.update({
+  id: '/ai-reports/middle',
+  path: '/ai-reports/middle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AiReportsHighRoute = AiReportsHighRouteImport.update({
+  id: '/ai-reports/high',
+  path: '/ai-reports/high',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports/': typeof AiReportsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports': typeof AiReportsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/saved': typeof SavedRoute
+  '/ai-reports/high': typeof AiReportsHighRoute
+  '/ai-reports/middle': typeof AiReportsMiddleRoute
   '/report/high': typeof ReportHighRoute
   '/report/middle': typeof ReportMiddleRoute
+  '/ai-reports/': typeof AiReportsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/dashboard'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/forgot-password'
     | '/login'
+    | '/reset-password'
     | '/saved'
+    | '/ai-reports/high'
+    | '/ai-reports/middle'
     | '/report/high'
     | '/report/middle'
+    | '/ai-reports/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SavedRoute: typeof SavedRoute
+  AiReportsHighRoute: typeof AiReportsHighRoute
+  AiReportsMiddleRoute: typeof AiReportsMiddleRoute
   ReportHighRoute: typeof ReportHighRoute
   ReportMiddleRoute: typeof ReportMiddleRoute
+  AiReportsIndexRoute: typeof AiReportsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -117,11 +182,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SavedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -138,6 +217,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-reports/': {
+      id: '/ai-reports/'
+      path: '/ai-reports'
+      fullPath: '/ai-reports/'
+      preLoaderRoute: typeof AiReportsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report/middle': {
       id: '/report/middle'
       path: '/report/middle'
@@ -152,27 +238,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportHighRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-reports/middle': {
+      id: '/ai-reports/middle'
+      path: '/ai-reports/middle'
+      fullPath: '/ai-reports/middle'
+      preLoaderRoute: typeof AiReportsMiddleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ai-reports/high': {
+      id: '/ai-reports/high'
+      path: '/ai-reports/high'
+      fullPath: '/ai-reports/high'
+      preLoaderRoute: typeof AiReportsHighRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SavedRoute: SavedRoute,
+  AiReportsHighRoute: AiReportsHighRoute,
+  AiReportsMiddleRoute: AiReportsMiddleRoute,
   ReportHighRoute: ReportHighRoute,
   ReportMiddleRoute: ReportMiddleRoute,
+  AiReportsIndexRoute: AiReportsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
