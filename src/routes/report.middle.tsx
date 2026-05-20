@@ -20,11 +20,7 @@ export const Route = createFileRoute("/report/middle")({
 });
 
 function CreateMiddle() {
-  const [student, setStudent] = useState({
-    name: "", father: "", mother: "", classSec: "", rollNo: "",
-    dob: "", session: "2026-2027", janpadCode: "", schoolCode: "", srNo: "",
-    schoolName: "जयप्रकाश नारायण सर्वोदय विद्यालय, तड़सड़ा (कठिराँव), जनपद-वाराणसी",
-  });
+  const [student, setStudent] = useState(emptyMiddleStudent());
   const [marks, setMarks] = useState<SubjectMarks[]>(SUBJECTS.map(emptyMarks));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -53,7 +49,7 @@ function CreateMiddle() {
 
   const reset = () => {
     setMarks(SUBJECTS.map(emptyMarks));
-    setStudent({ name: "", father: "", mother: "", classSec: "", rollNo: "", dob: "", session: "2026-2027", janpadCode: "", schoolCode: "", srNo: "", schoolName: "जयप्रकाश नारायण सर्वोदय विद्यालय, तड़सड़ा (कठिराँव), जनपद-वाराणसी" });
+    setStudent(emptyMiddleStudent());
   };
 
   const download = async () => {
