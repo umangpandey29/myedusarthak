@@ -86,7 +86,7 @@ export const MarksheetHigh = forwardRef<HTMLDivElement, MarksheetHighProps>(func
                   ? khelGrade
                   : (isHidden ? "" : rows[i].grade || autoGradeHigh(computed[i].totalObtained, computed[i].totalMax));
                 return (
-                  <tr key={i} style={isHidden ? { background: "#e6eef3" } : undefined}>
+                  <tr key={i}>
                     <td className="subj">{i + 1}. {s}{isHidden && " (—)"}</td>
                     <td></td><td>{!isHidden ? rows[i].halfMax : ""}</td>
                     <td>{!isHidden ? rows[i].s1 : ""}</td><td>10</td>
