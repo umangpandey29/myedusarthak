@@ -5,16 +5,13 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
 import { MarksheetHigh, computeHighPercentage } from "@/components/MarksheetHigh";
 import { HIGH_SUBJECTS, emptyHigh, emptyHighStudent, type HighRow, type HighStudent } from "@/lib/reportTypes";
-import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, type Row } from "@/lib/aiBulk";
+import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/high")({
   component: AIHigh,
   head: () => ({ meta: [{ title: "AI Bulk Reports 9–10 — MyEduSarthak" }] }),
 });
 
-// Subject keys for CSV columns (order = HIGH_SUBJECTS):
-// 0 hindi, 1 ganit, 2 english, 3 vigyan, 4 samajik, 5 sanskrit (permanent),
-// 6 vaikalpik (kala), 7 khel (auto), 8 computer
 const SUBJ_KEYS = ["hindi", "ganit", "english", "vigyan", "samajik", "sanskrit", "vaikalpik", "khel", "computer"];
 const IDENTITY = ["name", "father", "mother", "class_sec", "roll_no", "dob", "session", "janpad_code", "school_code",
   "upper_id", "udise_code", "pen", "aadhaar", "pen_reg", "registration", "elective_choice", "date", "school_name"];
@@ -28,26 +25,36 @@ function buildHeaders() {
 
 function rowToStudent(row: Row): { student: HighStudent; rows: HighRow[] } {
   const base = emptyHighStudent();
-  const elective = (row.elective_choice || "kala").toLowerCase() === "computer" ? "computer" : "kala";
+  const electiveRaw = pick(row, "elective_choice", "elective", "vaikalpik_choice").toLowerCase();
+  const elective: "kala" | "computer" = electiveRaw === "computer" ? "computer" : "kala";
   const student: HighStudent = {
     ...base,
-    name: row.name || "", father: row.father || "", mother: row.mother || "",
-    classSec: row.class_sec || "", rollNo: row.roll_no || "", dob: row.dob || "",
-    session: row.session || base.session, janpadCode: row.janpad_code || "",
-    schoolCode: row.school_code || "", upperId: row.upper_id || "", uDiseCode: row.udise_code || "",
-    pen: row.pen || "", aadhaar: row.aadhaar || "", penReg: row.pen_reg || "",
-    registration: row.registration || "",
+    name: pick(row, "name", "student_name", "students_name", "full_name"),
+    father: pick(row, "father", "fathers_name", "father_name"),
+    mother: pick(row, "mother", "mothers_name", "mother_name"),
+    classSec: pick(row, "class_sec", "class_section", "class") + (pick(row, "section") ? " - " + pick(row, "section") : ""),
+    rollNo: pick(row, "roll_no", "roll_number", "roll", "rollno"),
+    dob: pick(row, "dob", "date_of_birth", "birth_date"),
+    session: pick(row, "session", "academic_session", "year") || base.session,
+    janpadCode: pick(row, "janpad_code", "district_code"),
+    schoolCode: pick(row, "school_code"),
+    upperId: pick(row, "upper_id", "upperid"),
+    uDiseCode: pick(row, "udise_code", "udise"),
+    pen: pick(row, "pen"),
+    aadhaar: pick(row, "aadhaar", "aadhar"),
+    penReg: pick(row, "pen_reg", "penreg"),
+    registration: pick(row, "registration", "registration_number", "admission_number", "admission_no"),
     elective,
-    date: row.date || base.date,
-    schoolName: row.school_name || base.schoolName,
+    date: pick(row, "date", "report_date") || base.date,
+    schoolName: pick(row, "school_name", "school") || base.schoolName,
   };
   const rows: HighRow[] = HIGH_SUBJECTS.map((_, i) => {
     const k = SUBJ_KEYS[i];
     const r = emptyHigh();
-    r.halfMax = row[`${k}_halfmax`] || r.halfMax;
-    r.s1 = row[`${k}_s1`] || ""; r.s2 = row[`${k}_s2`] || ""; r.s3 = row[`${k}_s3`] || "";
-    r.ann = row[`${k}_ann`] || ""; r.annMax = row[`${k}_annmax`] || r.annMax;
-    r.grade = row[`${k}_grade`] || "";
+    r.halfMax = pick(row, `${k}_halfmax`) || r.halfMax;
+    r.s1 = pick(row, `${k}_s1`); r.s2 = pick(row, `${k}_s2`); r.s3 = pick(row, `${k}_s3`);
+    r.ann = pick(row, `${k}_ann`); r.annMax = pick(row, `${k}_annmax`) || r.annMax;
+    r.grade = pick(row, `${k}_grade`);
     return r;
   });
   return { student, rows };
@@ -58,14 +65,23 @@ function AIHigh() {
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState<"" | "zip" | "save">("");
   const [err, setErr] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
-    setErr(null);
+    setErr(null); setWarnings([]);
     try {
-      const rows = await parseFile(f);
-      setStudents(rows.map(rowToStudent));
+      const rows = (await parseFile(f)).filter((r) => !isBlankRow(r));
+      const mapped = rows.map(rowToStudent);
+      const warn: string[] = [];
+      mapped.forEach((m, idx) => {
+        if (!m.student.name) warn.push(`Row ${idx + 2}: missing student name (will be skipped)`);
+      });
+      const valid = mapped.filter((m) => m.student.name);
+      if (valid.length === 0) throw new Error("No valid student rows found. Check the CSV — at least 'name' (or 'student_name') is required.");
+      setStudents(valid);
+      setWarnings(warn);
       setProgress(0);
     } catch (er) { setErr(er instanceof Error ? er.message : "Could not parse file"); }
   };
@@ -74,7 +90,7 @@ function AIHigh() {
     const out: { filename: string; dataUrl: string; idx: number }[] = [];
     for (let i = 0; i < students.length; i++) {
       const el = refs.current[i]; if (!el) continue;
-      const dataUrl = await snapshotToPng(el, "#cfe3ef");
+      const dataUrl = await snapshotToPng(el, "#ffffff");
       const s = students[i].student;
       out.push({ filename: `${safeFileName(s.rollNo || String(i + 1))}-${safeFileName(s.name)}.png`, dataUrl, idx: i });
       setProgress(i + 1);
