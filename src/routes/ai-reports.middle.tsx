@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
 import { MarksheetMiddle, computeMiddlePercentage } from "@/components/MarksheetMiddle";
+import { BulkAcademicMarksheet } from "@/components/BulkAcademicMarksheet";
 import { MIDDLE_SUBJECTS, emptyMiddle, emptyMiddleStudent, type MiddleMarks, type MiddleStudent } from "@/lib/reportTypes";
-import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, type Row } from "@/lib/aiBulk";
+import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, buildAcademicReport, assignRanks, type BulkAcademicReport, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/middle")({
   component: AIMiddle,
@@ -54,7 +55,7 @@ function rowToStudent(row: Row): { student: MiddleStudent; marks: MiddleMarks[] 
 }
 
 function AIMiddle() {
-  const [students, setStudents] = useState<{ student: MiddleStudent; marks: MiddleMarks[] }[]>([]);
+  const [students, setStudents] = useState<BulkAcademicReport[]>([]);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState<"" | "zip" | "save">("");
   const [err, setErr] = useState<string | null>(null);
