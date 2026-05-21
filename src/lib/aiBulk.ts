@@ -28,8 +28,34 @@ export async function parseFile(file: File): Promise<Row[]> {
 
 function normalize(row: Row): Row {
   const out: Row = {};
-  for (const k of Object.keys(row)) out[k.trim()] = String(row[k] ?? "").trim();
+  for (const k of Object.keys(row)) {
+    // Normalize header: lowercase, trim, strip apostrophes/punctuation,
+    // collapse whitespace and dashes to underscore.
+    const key = String(k)
+      .trim()
+      .toLowerCase()
+      .replace(/['']/g, "")
+      .replace(/[\s\-./]+/g, "_")
+      .replace(/[^a-z0-9_]/g, "")
+      .replace(/_+/g, "_")
+      .replace(/^_|_$/g, "");
+    out[key] = String(row[k] ?? "").trim();
+  }
   return out;
+}
+
+/** Pick the first non-empty value from a list of possible keys. */
+export function pick(row: Row, ...keys: string[]): string {
+  for (const k of keys) {
+    const norm = k.toLowerCase().replace(/[\s\-./]+/g, "_");
+    if (row[norm] != null && row[norm] !== "") return row[norm];
+  }
+  return "";
+}
+
+/** True if every value in the row is empty — used to skip blank CSV rows. */
+export function isBlankRow(row: Row): boolean {
+  return Object.values(row).every((v) => !v || !String(v).trim());
 }
 
 export function downloadCSV(filename: string, headers: string[], sampleRow?: Row) {
