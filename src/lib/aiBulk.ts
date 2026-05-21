@@ -109,7 +109,7 @@ const NON_ACADEMIC = new Set([
   "session", "academic_session", "year", "janpad_code", "district_code", "school_code", "school_name",
   "school", "sr_no", "srno", "admission_number", "admission_no", "admission", "upper_id", "upperid",
   "udise_code", "udise", "pen", "aadhaar", "aadhar", "pen_reg", "penreg", "registration",
-  "registration_number", "elective_choice", "elective", "vaikalpik_choice", "date", "report_date",
+  "registration_number", "elective_choice", "vaikalpik_choice", "date", "report_date",
   "total", "total_marks", "obtained_total", "grand_total", "percentage", "percent", "grade", "overall_grade",
   "rank", "class_rank", "result", "remarks",
 ]);
