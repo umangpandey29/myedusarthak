@@ -45,8 +45,8 @@
   --border: oklch(0.9 0.01 240);
   --input: oklch(0.92 0.01 240);
   --ring: oklch(0.62 0.17 175);
-  --sheet: oklch(0.96 0.08 95);
-  --sheet-foreground: oklch(0.2 0.03 30);
+  --sheet: #ffffff;
+  --sheet-foreground: #0d0d0d;
 }
 
 @layer base {
@@ -73,7 +73,7 @@
   vertical-align: middle;
   color: #000;
 }
-.marksheet th { font-weight: 700; background: oklch(0.94 0.09 95); }
+.marksheet th { font-weight: 700; background: #ffffff; }
 .marksheet .subj { text-align: left; padding-left: 6px; font-size: 11px; }
 .marksheet .totals { color: #b91c1c; font-weight: 700; }
 .marksheet .vertical {
@@ -86,9 +86,9 @@
 }
 .marksheet .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
 
-/* High-school (9-10) variant on light blue paper */
+/* High-school (9-10) variant */
 .marksheet-high {
-  background: #cfe3ef;
+  background: #ffffff;
   color: #0d0d0d;
   font-family: "Noto Sans Devanagari", "Mangal", serif;
 }
@@ -101,7 +101,7 @@
   vertical-align: middle;
   color: #000;
 }
-.marksheet-high th { font-weight: 700; background: #b9d5e3; }
+.marksheet-high th { font-weight: 700; background: #ffffff; }
 .marksheet-high .subj { text-align: left; padding-left: 6px; font-size: 11px; }
 .marksheet-high .totals { font-weight: 700; }
 .marksheet-high .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }

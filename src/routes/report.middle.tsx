@@ -57,7 +57,7 @@ function CreateMiddle() {
     setSaving(true);
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(sheetRef.current, { pixelRatio: 2, backgroundColor: "#fef9c3", cacheBust: true });
+      const dataUrl = await toPng(sheetRef.current, { pixelRatio: 2, backgroundColor: "#ffffff", cacheBust: true });
       const link = document.createElement("a");
       link.download = `${student.name || "marksheet"}-${Date.now()}.png`;
       link.href = dataUrl;
