@@ -5,7 +5,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
 import { MarksheetMiddle, computeMiddlePercentage } from "@/components/MarksheetMiddle";
 import { MIDDLE_SUBJECTS, emptyMiddle, emptyMiddleStudent, type MiddleMarks, type MiddleStudent } from "@/lib/reportTypes";
-import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, type Row } from "@/lib/aiBulk";
+import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/middle")({
   component: AIMiddle,
@@ -26,20 +26,28 @@ function rowToStudent(row: Row): { student: MiddleStudent; marks: MiddleMarks[] 
   const base = emptyMiddleStudent();
   const student: MiddleStudent = {
     ...base,
-    name: row.name || "", father: row.father || "", mother: row.mother || "",
-    classSec: row.class_sec || "", rollNo: row.roll_no || "", dob: row.dob || "",
-    session: row.session || base.session, janpadCode: row.janpad_code || "",
-    schoolCode: row.school_code || "", srNo: row.sr_no || "",
-    schoolName: row.school_name || base.schoolName,
+    name: pick(row, "name", "student_name", "students_name", "full_name"),
+    father: pick(row, "father", "fathers_name", "father_name"),
+    mother: pick(row, "mother", "mothers_name", "mother_name"),
+    classSec: pick(row, "class_sec", "class_section", "class") + (pick(row, "section") ? " - " + pick(row, "section") : pick(row, "class_sec", "class_section", "class") ? "" : ""),
+    rollNo: pick(row, "roll_no", "roll_number", "roll", "rollno"),
+    dob: pick(row, "dob", "date_of_birth", "birth_date", "birthdate"),
+    session: pick(row, "session", "academic_session", "year") || base.session,
+    janpadCode: pick(row, "janpad_code", "district_code"),
+    schoolCode: pick(row, "school_code"),
+    srNo: pick(row, "sr_no", "srno", "admission_number", "admission_no", "admission"),
+    schoolName: pick(row, "school_name", "school") || base.schoolName,
   };
   const marks: MiddleMarks[] = MIDDLE_SUBJECTS.map((_, i) => {
     const k = SUBJ_KEYS[i];
     const m = emptyMiddle();
-    m.h1 = row[`${k}_h1`] || ""; m.h2 = row[`${k}_h2`] || ""; m.hPrac = row[`${k}_hprac`] || "";
-    m.hHalf = row[`${k}_hhalf`] || ""; m.hMax = row[`${k}_hmax`] || m.hMax;
-    m.a1 = row[`${k}_a1`] || ""; m.a2 = row[`${k}_a2`] || ""; m.aPrac = row[`${k}_aprac`] || "";
-    m.aAnn = row[`${k}_aann`] || ""; m.aMax = row[`${k}_amax`] || m.aMax;
-    m.grade = row[`${k}_grade`] || "";
+    m.h1 = pick(row, `${k}_h1`); m.h2 = pick(row, `${k}_h2`);
+    m.hPrac = pick(row, `${k}_hprac`); m.hHalf = pick(row, `${k}_hhalf`);
+    m.hMax = pick(row, `${k}_hmax`) || m.hMax;
+    m.a1 = pick(row, `${k}_a1`); m.a2 = pick(row, `${k}_a2`);
+    m.aPrac = pick(row, `${k}_aprac`); m.aAnn = pick(row, `${k}_aann`);
+    m.aMax = pick(row, `${k}_amax`) || m.aMax;
+    m.grade = pick(row, `${k}_grade`);
     return m;
   });
   return { student, marks };
@@ -50,14 +58,23 @@ function AIMiddle() {
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState<"" | "zip" | "save">("");
   const [err, setErr] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<string[]>([]);
   const refs = useRef<(HTMLDivElement | null)[]>([]);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]; if (!f) return;
-    setErr(null);
+    setErr(null); setWarnings([]);
     try {
-      const rows = await parseFile(f);
-      setStudents(rows.map(rowToStudent));
+      const rows = (await parseFile(f)).filter((r) => !isBlankRow(r));
+      const mapped = rows.map(rowToStudent);
+      const warn: string[] = [];
+      mapped.forEach((m, idx) => {
+        if (!m.student.name) warn.push(`Row ${idx + 2}: missing student name (will be skipped)`);
+      });
+      const valid = mapped.filter((m) => m.student.name);
+      if (valid.length === 0) throw new Error("No valid student rows found. Check the CSV — at least 'name' (or 'student_name') is required.");
+      setStudents(valid);
+      setWarnings(warn);
       setProgress(0);
     } catch (er) { setErr(er instanceof Error ? er.message : "Could not parse file"); }
   };
@@ -66,7 +83,7 @@ function AIMiddle() {
     const out: { filename: string; dataUrl: string; idx: number }[] = [];
     for (let i = 0; i < students.length; i++) {
       const el = refs.current[i]; if (!el) continue;
-      const dataUrl = await snapshotToPng(el, "#fef9c3");
+      const dataUrl = await snapshotToPng(el, "#ffffff");
       const s = students[i].student;
       out.push({ filename: `${safeFileName(s.rollNo || String(i + 1))}-${safeFileName(s.name)}.png`, dataUrl, idx: i });
       setProgress(i + 1);
