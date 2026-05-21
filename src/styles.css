@@ -45,8 +45,8 @@
   --border: oklch(0.9 0.01 240);
   --input: oklch(0.92 0.01 240);
   --ring: oklch(0.62 0.17 175);
-  --sheet: oklch(0.96 0.08 95);
-  --sheet-foreground: oklch(0.2 0.03 30);
+  --sheet: #ffffff;
+  --sheet-foreground: #0d0d0d;
 }
 
 @layer base {
