@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
 import { MarksheetHigh, computeHighPercentage } from "@/components/MarksheetHigh";
+import { BulkAcademicMarksheet } from "@/components/BulkAcademicMarksheet";
 import { HIGH_SUBJECTS, emptyHigh, emptyHighStudent, type HighRow, type HighStudent } from "@/lib/reportTypes";
-import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, type Row } from "@/lib/aiBulk";
+import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, buildAcademicReport, assignRanks, type BulkAcademicReport, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/high")({
   component: AIHigh,
@@ -60,8 +61,27 @@ function rowToStudent(row: Row): { student: HighStudent; rows: HighRow[] } {
   return { student, rows };
 }
 
+function identityFromRow(row: Row): Record<string, string> {
+  const base = emptyHighStudent();
+  const classValue = pick(row, "class_sec", "class_section", "class");
+  const section = pick(row, "section");
+  return {
+    name: pick(row, "name", "student_name", "students_name", "full_name"),
+    father: pick(row, "father", "fathers_name", "father_name"),
+    mother: pick(row, "mother", "mothers_name", "mother_name"),
+    classSec: classValue + (section ? " - " + section : ""),
+    rollNo: pick(row, "roll_no", "roll_number", "roll", "rollno"),
+    dob: pick(row, "dob", "date_of_birth", "birth_date"),
+    session: pick(row, "session", "academic_session", "year") || base.session,
+    janpadCode: pick(row, "janpad_code", "district_code"),
+    schoolCode: pick(row, "school_code"),
+    srNo: pick(row, "sr_no", "srno", "admission_number", "admission_no", "admission"),
+    schoolName: pick(row, "school_name", "school") || base.schoolName,
+  };
+}
+
 function AIHigh() {
-  const [students, setStudents] = useState<{ student: HighStudent; rows: HighRow[] }[]>([]);
+  const [students, setStudents] = useState<BulkAcademicReport[]>([]);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState<"" | "zip" | "save">("");
   const [err, setErr] = useState<string | null>(null);
