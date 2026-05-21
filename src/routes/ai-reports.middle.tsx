@@ -3,9 +3,9 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
-import { MarksheetMiddle, computeMiddlePercentage } from "@/components/MarksheetMiddle";
-import { MIDDLE_SUBJECTS, emptyMiddle, emptyMiddleStudent, type MiddleMarks, type MiddleStudent } from "@/lib/reportTypes";
-import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, type Row } from "@/lib/aiBulk";
+import { BulkAcademicMarksheet } from "@/components/BulkAcademicMarksheet";
+import { emptyMiddleStudent } from "@/lib/reportTypes";
+import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, buildAcademicReport, assignRanks, type BulkAcademicReport, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/middle")({
   component: AIMiddle,
@@ -22,14 +22,15 @@ function buildHeaders() {
   return h;
 }
 
-function rowToStudent(row: Row): { student: MiddleStudent; marks: MiddleMarks[] } {
+function identityFromRow(row: Row): Record<string, string> {
   const base = emptyMiddleStudent();
-  const student: MiddleStudent = {
-    ...base,
+  const classValue = pick(row, "class_sec", "class_section", "class");
+  const section = pick(row, "section");
+  return {
     name: pick(row, "name", "student_name", "students_name", "full_name"),
     father: pick(row, "father", "fathers_name", "father_name"),
     mother: pick(row, "mother", "mothers_name", "mother_name"),
-    classSec: pick(row, "class_sec", "class_section", "class") + (pick(row, "section") ? " - " + pick(row, "section") : pick(row, "class_sec", "class_section", "class") ? "" : ""),
+    classSec: classValue + (section ? " - " + section : ""),
     rollNo: pick(row, "roll_no", "roll_number", "roll", "rollno"),
     dob: pick(row, "dob", "date_of_birth", "birth_date", "birthdate"),
     session: pick(row, "session", "academic_session", "year") || base.session,
@@ -38,23 +39,10 @@ function rowToStudent(row: Row): { student: MiddleStudent; marks: MiddleMarks[] 
     srNo: pick(row, "sr_no", "srno", "admission_number", "admission_no", "admission"),
     schoolName: pick(row, "school_name", "school") || base.schoolName,
   };
-  const marks: MiddleMarks[] = MIDDLE_SUBJECTS.map((_, i) => {
-    const k = SUBJ_KEYS[i];
-    const m = emptyMiddle();
-    m.h1 = pick(row, `${k}_h1`); m.h2 = pick(row, `${k}_h2`);
-    m.hPrac = pick(row, `${k}_hprac`); m.hHalf = pick(row, `${k}_hhalf`);
-    m.hMax = pick(row, `${k}_hmax`) || m.hMax;
-    m.a1 = pick(row, `${k}_a1`); m.a2 = pick(row, `${k}_a2`);
-    m.aPrac = pick(row, `${k}_aprac`); m.aAnn = pick(row, `${k}_aann`);
-    m.aMax = pick(row, `${k}_amax`) || m.aMax;
-    m.grade = pick(row, `${k}_grade`);
-    return m;
-  });
-  return { student, marks };
 }
 
 function AIMiddle() {
-  const [students, setStudents] = useState<{ student: MiddleStudent; marks: MiddleMarks[] }[]>([]);
+  const [students, setStudents] = useState<BulkAcademicReport[]>([]);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState<"" | "zip" | "save">("");
   const [err, setErr] = useState<string | null>(null);
@@ -66,14 +54,19 @@ function AIMiddle() {
     setErr(null); setWarnings([]);
     try {
       const rows = (await parseFile(f)).filter((r) => !isBlankRow(r));
-      const mapped = rows.map(rowToStudent);
+      const mapped = rows.map((row) => buildAcademicReport(row, identityFromRow(row)));
       const warn: string[] = [];
       mapped.forEach((m, idx) => {
         if (!m.student.name) warn.push(`Row ${idx + 2}: missing student name (will be skipped)`);
+        if (m.subjects.length === 0) warn.push(`Row ${idx + 2}: no subject marks detected (will be skipped)`);
       });
-      const valid = mapped.filter((m) => m.student.name);
-      if (valid.length === 0) throw new Error("No valid student rows found. Check the CSV — at least 'name' (or 'student_name') is required.");
-      setStudents(valid);
+      const valid = mapped.filter((m) => m.student.name && m.subjects.length > 0);
+      if (valid.length === 0) throw new Error("No valid report rows found. Check the CSV — each row needs a student name and at least one subject marks column.");
+      const ranked = assignRanks(valid, (report) => report.totals.obtained).map(({ rank, ...report }) => ({
+        ...report,
+        totals: { ...report.totals, rank },
+      }));
+      setStudents(ranked);
       setWarnings(warn);
       setProgress(0);
     } catch (er) { setErr(er instanceof Error ? er.message : "Could not parse file"); }
@@ -112,11 +105,11 @@ function AIMiddle() {
     try {
       const pngs = await generatePngs();
       await bulkSaveCloud(pngs.map((p) => {
-        const { student, marks } = students[p.idx];
+        const { student, totals } = students[p.idx];
         return {
           report_type: "middle",
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
-          session: student.session, percentage: computeMiddlePercentage(marks), image: p.dataUrl,
+          session: student.session, percentage: totals.percentage, image: p.dataUrl,
         };
       }));
       alert(`Saved ${pngs.length} reports to your account.`);
@@ -151,9 +144,7 @@ function AIMiddle() {
               </>
             )}
           </div>
-          <div className="text-xs text-muted-foreground">
-            Subjects in order: {SUBJ_KEYS.map((k, i) => `${k} = ${MIDDLE_SUBJECTS[i]}`).join("  •  ")}
-          </div>
+          <div className="text-xs text-muted-foreground">Subject columns are detected dynamically. The template also supports detailed columns like hindi_h1, hindi_aann, hindi_hmax, and hindi_amax.</div>
           {students.length > 0 && (
             <div className="text-sm">
               <strong>{students.length}</strong> students loaded.
@@ -172,7 +163,7 @@ function AIMiddle() {
         <div style={{ position: "absolute", left: -99999, top: 0 }}>
           {students.map((s, i) => (
             <div key={i} style={{ width: 1100 }}>
-              <MarksheetMiddle ref={(el) => { refs.current[i] = el; }} student={s.student} marks={s.marks} />
+              <BulkAcademicMarksheet ref={(el) => { refs.current[i] = el; }} report={s} title="अंक-पत्र, कक्षा 6–8" />
             </div>
           ))}
         </div>

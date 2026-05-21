@@ -60,9 +60,13 @@
 
 /* Marksheet specific styles */
 .marksheet {
-  background: var(--color-sheet);
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   color: var(--color-sheet-foreground);
   font-family: "Noto Sans Devanagari", "Mangal", serif;
+}
+.marksheet *, .marksheet-high * {
+  background-image: none !important;
 }
 .marksheet table { border-collapse: collapse; width: 100%; }
 .marksheet th, .marksheet td {
@@ -88,7 +92,8 @@
 
 /* High-school (9-10) variant */
 .marksheet-high {
-  background: #ffffff;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
   color: #0d0d0d;
   font-family: "Noto Sans Devanagari", "Mangal", serif;
 }
@@ -105,4 +110,8 @@
 .marksheet-high .subj { text-align: left; padding-left: 6px; font-size: 11px; }
 .marksheet-high .totals { font-weight: 700; }
 .marksheet-high .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
+.marksheet th, .marksheet td, .marksheet tr,
+.marksheet-high th, .marksheet-high td, .marksheet-high tr {
+  background-color: #ffffff !important;
+}
 
