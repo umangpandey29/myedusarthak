@@ -93,14 +93,19 @@ function AIHigh() {
     setErr(null); setWarnings([]);
     try {
       const rows = (await parseFile(f)).filter((r) => !isBlankRow(r));
-      const mapped = rows.map(rowToStudent);
+      const mapped = rows.map((row) => buildAcademicReport(row, identityFromRow(row)));
       const warn: string[] = [];
       mapped.forEach((m, idx) => {
         if (!m.student.name) warn.push(`Row ${idx + 2}: missing student name (will be skipped)`);
+        if (m.subjects.length === 0) warn.push(`Row ${idx + 2}: no subject marks detected (will be skipped)`);
       });
-      const valid = mapped.filter((m) => m.student.name);
-      if (valid.length === 0) throw new Error("No valid student rows found. Check the CSV — at least 'name' (or 'student_name') is required.");
-      setStudents(valid);
+      const valid = mapped.filter((m) => m.student.name && m.subjects.length > 0);
+      if (valid.length === 0) throw new Error("No valid report rows found. Check the CSV — each row needs a student name and at least one subject marks column.");
+      const ranked = assignRanks(valid, (report) => report.totals.obtained).map(({ rank, ...report }) => ({
+        ...report,
+        totals: { ...report.totals, rank },
+      }));
+      setStudents(ranked);
       setWarnings(warn);
       setProgress(0);
     } catch (er) { setErr(er instanceof Error ? er.message : "Could not parse file"); }
@@ -139,11 +144,11 @@ function AIHigh() {
     try {
       const pngs = await generatePngs();
       await bulkSaveCloud(pngs.map((p) => {
-        const { student, rows } = students[p.idx];
+        const { student, totals } = students[p.idx];
         return {
           report_type: "high",
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
-          session: student.session, percentage: computeHighPercentage(student, rows), image: p.dataUrl,
+          session: student.session, percentage: totals.percentage, image: p.dataUrl,
         };
       }));
       alert(`Saved ${pngs.length} reports to your account.`);
@@ -199,7 +204,7 @@ function AIHigh() {
         <div style={{ position: "absolute", left: -99999, top: 0 }}>
           {students.map((s, i) => (
             <div key={i} style={{ width: 1100 }}>
-              <MarksheetHigh ref={(el) => { refs.current[i] = el; }} student={s.student} rows={s.rows} />
+              <BulkAcademicMarksheet ref={(el) => { refs.current[i] = el; }} report={s} title="अंक-पत्र, कक्षा 9–10" />
             </div>
           ))}
         </div>
