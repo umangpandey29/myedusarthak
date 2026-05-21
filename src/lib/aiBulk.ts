@@ -115,6 +115,14 @@ const NON_ACADEMIC = new Set([
 ]);
 
 const FIELD_SUFFIXES: { suffix: string; field: "obtained" | "max" | "grade" }[] = [
+  { suffix: "_h1", field: "obtained" }, { suffix: "_h2", field: "obtained" },
+  { suffix: "_hprac", field: "obtained" }, { suffix: "_hhalf", field: "obtained" },
+  { suffix: "_a1", field: "obtained" }, { suffix: "_a2", field: "obtained" },
+  { suffix: "_aprac", field: "obtained" }, { suffix: "_aann", field: "obtained" },
+  { suffix: "_s1", field: "obtained" }, { suffix: "_s2", field: "obtained" },
+  { suffix: "_s3", field: "obtained" }, { suffix: "_ann", field: "obtained" },
+  { suffix: "_hmax", field: "max" }, { suffix: "_amax", field: "max" },
+  { suffix: "_halfmax", field: "max" }, { suffix: "_annmax", field: "max" },
   { suffix: "_obtained_marks", field: "obtained" }, { suffix: "_marks_obtained", field: "obtained" },
   { suffix: "_total_obtained", field: "obtained" }, { suffix: "_obtained", field: "obtained" },
   { suffix: "_marks", field: "obtained" }, { suffix: "_mark", field: "obtained" },
@@ -144,6 +152,7 @@ function labelFromKey(key: string): string {
 
 export function detectAcademicSubjects(row: Row): DetectedSubject[] {
   const grouped = new Map<string, { obtained?: string; max?: string; grade?: string }>();
+  const addNumber = (current: string | undefined, next: number) => formatNumber((toNumber(current) ?? 0) + next);
   for (const [key, value] of Object.entries(row)) {
     const parsed = splitAcademicKey(key);
     if (!parsed || !parsed.subject || NON_ACADEMIC.has(parsed.subject)) continue;
@@ -151,16 +160,16 @@ export function detectAcademicSubjects(row: Row): DetectedSubject[] {
     if (parsed.field === "grade") group.grade = String(value ?? "").trim();
     else if (parsed.field === "max") {
       const max = toNumber(value);
-      if (max !== null) group.max = formatNumber(max);
+      if (max !== null) group.max = addNumber(group.max, max);
     } else {
       const raw = String(value ?? "").trim();
       const pair = raw.match(/(-?\d+(?:\.\d+)?)\s*\/\s*(-?\d+(?:\.\d+)?)/);
       if (pair) {
-        group.obtained = formatNumber(Number(pair[1]));
-        group.max = formatNumber(Number(pair[2]));
+        group.obtained = addNumber(group.obtained, Number(pair[1]));
+        group.max = addNumber(group.max, Number(pair[2]));
       } else {
         const obtained = toNumber(value);
-        if (obtained !== null) group.obtained = formatNumber(obtained);
+        if (obtained !== null) group.obtained = addNumber(group.obtained, obtained);
       }
     }
     grouped.set(parsed.subject, group);
