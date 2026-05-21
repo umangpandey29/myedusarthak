@@ -73,7 +73,7 @@
   vertical-align: middle;
   color: #000;
 }
-.marksheet th { font-weight: 700; background: oklch(0.94 0.09 95); }
+.marksheet th { font-weight: 700; background: #ffffff; }
 .marksheet .subj { text-align: left; padding-left: 6px; font-size: 11px; }
 .marksheet .totals { color: #b91c1c; font-weight: 700; }
 .marksheet .vertical {
