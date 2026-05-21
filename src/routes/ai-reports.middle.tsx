@@ -3,9 +3,8 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Upload, Download, Save, Loader2, FileSpreadsheet } from "lucide-react";
-import { MarksheetMiddle, computeMiddlePercentage } from "@/components/MarksheetMiddle";
 import { BulkAcademicMarksheet } from "@/components/BulkAcademicMarksheet";
-import { MIDDLE_SUBJECTS, emptyMiddle, emptyMiddleStudent, type MiddleMarks, type MiddleStudent } from "@/lib/reportTypes";
+import { emptyMiddleStudent } from "@/lib/reportTypes";
 import { parseFile, downloadCSV, snapshotToPng, buildZip, safeFileName, bulkSaveCloud, pick, isBlankRow, buildAcademicReport, assignRanks, type BulkAcademicReport, type Row } from "@/lib/aiBulk";
 
 export const Route = createFileRoute("/ai-reports/middle")({
@@ -21,37 +20,6 @@ function buildHeaders() {
   const h = [...IDENTITY];
   for (const s of SUBJ_KEYS) for (const f of PER_SUBJ_FIELDS) h.push(`${s}_${f}`);
   return h;
-}
-
-function rowToStudent(row: Row): { student: MiddleStudent; marks: MiddleMarks[] } {
-  const base = emptyMiddleStudent();
-  const student: MiddleStudent = {
-    ...base,
-    name: pick(row, "name", "student_name", "students_name", "full_name"),
-    father: pick(row, "father", "fathers_name", "father_name"),
-    mother: pick(row, "mother", "mothers_name", "mother_name"),
-    classSec: pick(row, "class_sec", "class_section", "class") + (pick(row, "section") ? " - " + pick(row, "section") : pick(row, "class_sec", "class_section", "class") ? "" : ""),
-    rollNo: pick(row, "roll_no", "roll_number", "roll", "rollno"),
-    dob: pick(row, "dob", "date_of_birth", "birth_date", "birthdate"),
-    session: pick(row, "session", "academic_session", "year") || base.session,
-    janpadCode: pick(row, "janpad_code", "district_code"),
-    schoolCode: pick(row, "school_code"),
-    srNo: pick(row, "sr_no", "srno", "admission_number", "admission_no", "admission"),
-    schoolName: pick(row, "school_name", "school") || base.schoolName,
-  };
-  const marks: MiddleMarks[] = MIDDLE_SUBJECTS.map((_, i) => {
-    const k = SUBJ_KEYS[i];
-    const m = emptyMiddle();
-    m.h1 = pick(row, `${k}_h1`); m.h2 = pick(row, `${k}_h2`);
-    m.hPrac = pick(row, `${k}_hprac`); m.hHalf = pick(row, `${k}_hhalf`);
-    m.hMax = pick(row, `${k}_hmax`) || m.hMax;
-    m.a1 = pick(row, `${k}_a1`); m.a2 = pick(row, `${k}_a2`);
-    m.aPrac = pick(row, `${k}_aprac`); m.aAnn = pick(row, `${k}_aann`);
-    m.aMax = pick(row, `${k}_amax`) || m.aMax;
-    m.grade = pick(row, `${k}_grade`);
-    return m;
-  });
-  return { student, marks };
 }
 
 function identityFromRow(row: Row): Record<string, string> {
@@ -176,9 +144,7 @@ function AIMiddle() {
               </>
             )}
           </div>
-          <div className="text-xs text-muted-foreground">
-            Subjects in order: {SUBJ_KEYS.map((k, i) => `${k} = ${MIDDLE_SUBJECTS[i]}`).join("  •  ")}
-          </div>
+          <div className="text-xs text-muted-foreground">Subject columns are detected dynamically. The template also supports detailed columns like hindi_h1, hindi_aann, hindi_hmax, and hindi_amax.</div>
           {students.length > 0 && (
             <div className="text-sm">
               <strong>{students.length}</strong> students loaded.
