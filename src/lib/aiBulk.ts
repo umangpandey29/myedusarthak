@@ -177,6 +177,36 @@ export function detectAcademicSubjects(row: Row): DetectedSubject[] {
     }));
 }
 
+export function buildAcademicReport(row: Row, student: Record<string, string>): BulkAcademicReport {
+  const subjects = detectAcademicSubjects(row).map((subject) => {
+    const obtained = toNumber(subject.obtained) ?? 0;
+    const max = toNumber(subject.max) ?? 100;
+    const percent = max > 0 ? (obtained / max) * 100 : 0;
+    return {
+      name: subject.label,
+      marks: formatNumber(obtained),
+      maxMarks: formatNumber(max),
+      grade: subject.grade || autoGradeFromPercent(percent),
+    };
+  }).filter((subject) => subject.marks !== "");
+  const totalsRaw = subjects.reduce((acc, subject) => ({
+    obtained: acc.obtained + (toNumber(subject.marks) ?? 0),
+    max: acc.max + (toNumber(subject.maxMarks) ?? 0),
+  }), { obtained: 0, max: 0 });
+  const percent = totalsRaw.max > 0 ? (totalsRaw.obtained / totalsRaw.max) * 100 : 0;
+  return {
+    student,
+    subjects,
+    totals: {
+      obtained: totalsRaw.obtained,
+      max: totalsRaw.max,
+      percentage: totalsRaw.max > 0 ? percent.toFixed(2) : "0.00",
+      overallGrade: autoGradeFromPercent(percent),
+      rank: 0,
+    },
+  };
+}
+
 /** True if every value in the row is empty — used to skip blank CSV rows. */
 export function isBlankRow(row: Row): boolean {
   return Object.values(row).every((v) => !v || !String(v).trim());
