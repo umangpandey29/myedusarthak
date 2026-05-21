@@ -86,9 +86,9 @@
 }
 .marksheet .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
 
-/* High-school (9-10) variant on light blue paper */
+/* High-school (9-10) variant */
 .marksheet-high {
-  background: #cfe3ef;
+  background: #ffffff;
   color: #0d0d0d;
   font-family: "Noto Sans Devanagari", "Mangal", serif;
 }
@@ -101,7 +101,7 @@
   vertical-align: middle;
   color: #000;
 }
-.marksheet-high th { font-weight: 700; background: #b9d5e3; }
+.marksheet-high th { font-weight: 700; background: #ffffff; }
 .marksheet-high .subj { text-align: left; padding-left: 6px; font-size: 11px; }
 .marksheet-high .totals { font-weight: 700; }
 .marksheet-high .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
