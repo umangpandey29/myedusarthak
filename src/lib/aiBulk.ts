@@ -73,7 +73,7 @@ export function normalizeKey(key: string): string {
     .replace(/['’]/g, "")
     .replace(/&/g, "and")
     .replace(/[\s\-./()]+/g, "_")
-    .replace(/[^a-z0-9_]/g, "")
+    .replace(/[^\p{L}\p{N}_]/gu, "")
     .replace(/_+/g, "_")
     .replace(/^_|_$/g, "");
 }
