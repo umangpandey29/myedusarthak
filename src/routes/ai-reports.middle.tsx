@@ -160,6 +160,11 @@ function AIMiddle() {
               {busy && <span className="ml-3 text-muted-foreground">Generating {progress}/{students.length}…</span>}
             </div>
           )}
+          {warnings.length > 0 && (
+            <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2 max-h-24 overflow-auto">
+              {warnings.map((w, i) => <div key={i}>{w}</div>)}
+            </div>
+          )}
           {err && <div className="text-sm text-red-600">{err}</div>}
         </div>
 
