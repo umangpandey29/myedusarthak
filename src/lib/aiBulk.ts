@@ -39,14 +39,7 @@ function normalize(row: Row): Row {
   for (const k of Object.keys(row)) {
     // Normalize header: lowercase, trim, strip apostrophes/punctuation,
     // collapse whitespace and dashes to underscore.
-    const key = String(k)
-      .trim()
-      .toLowerCase()
-      .replace(/['']/g, "")
-      .replace(/[\s\-./]+/g, "_")
-      .replace(/[^a-z0-9_]/g, "")
-      .replace(/_+/g, "_")
-      .replace(/^_|_$/g, "");
+    const key = normalizeKey(k);
     out[key] = String(row[k] ?? "").trim();
   }
   return out;
@@ -202,4 +195,28 @@ export async function bulkSaveCloud(
   for (const r of records) {
     try { await saveCloudReport(r); } catch (e) { console.error("Save failed for", r.student_name, e); }
   }
+}
+
+export function autoGradeFromPercent(percent: number): string {
+  if (!Number.isFinite(percent)) return "";
+  if (percent >= 91) return "A1";
+  if (percent >= 81) return "A2";
+  if (percent >= 71) return "B1";
+  if (percent >= 61) return "B2";
+  if (percent >= 51) return "C1";
+  if (percent >= 41) return "C2";
+  if (percent >= 33) return "D";
+  return "E";
+}
+
+export function assignRanks<T>(items: T[], getTotal: (item: T) => number): (T & { rank: number })[] {
+  const order = items.map((item, index) => ({ item, index, total: getTotal(item) }))
+    .sort((a, b) => b.total - a.total);
+  const ranks = new Array<number>(items.length).fill(0);
+  let currentRank = 1;
+  for (let i = 0; i < order.length; i++) {
+    if (i > 0 && order[i].total < order[i - 1].total) currentRank = i + 1;
+    ranks[order[i].index] = currentRank;
+  }
+  return items.map((item, index) => ({ ...item, rank: ranks[index] }));
 }
