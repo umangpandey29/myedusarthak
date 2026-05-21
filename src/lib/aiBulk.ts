@@ -14,6 +14,27 @@ export type DetectedSubject = {
   grade: string;
 };
 
+export type BulkAcademicSubject = {
+  name: string;
+  marks: string;
+  maxMarks: string;
+  grade: string;
+};
+
+export type BulkAcademicTotals = {
+  obtained: number;
+  max: number;
+  percentage: string;
+  overallGrade: string;
+  rank: number;
+};
+
+export type BulkAcademicReport = {
+  student: Record<string, string>;
+  subjects: BulkAcademicSubject[];
+  totals: BulkAcademicTotals;
+};
+
 export async function parseFile(file: File): Promise<Row[]> {
   const ext = file.name.split(".").pop()?.toLowerCase();
   if (ext === "csv" || file.type === "text/csv") {
