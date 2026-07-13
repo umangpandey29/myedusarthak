@@ -81,9 +81,10 @@ function CreateMiddle() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <AppSidebar />
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 lg:p-6 min-w-0">
+
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <h1 className="text-xl font-semibold">Create Report — Classes 6–8</h1>
           <div className="flex gap-2">
