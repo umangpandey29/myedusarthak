@@ -95,6 +95,7 @@ function CreateMiddle() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
+
           <div className="space-y-6">
             <section className="bg-card rounded-xl p-5 border border-border">
               <h2 className="font-semibold text-primary mb-4 text-sm tracking-wide">1. STUDENT RECORDS</h2>
