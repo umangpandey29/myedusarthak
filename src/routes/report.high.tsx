@@ -32,7 +32,14 @@ function CreateHigh() {
     setSaving(true);
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(sheetRef.current, { pixelRatio: 2, backgroundColor: "#ffffff", cacheBust: true });
+      const node = sheetRef.current;
+      const w = Math.max(node.scrollWidth, node.offsetWidth);
+      const h = Math.max(node.scrollHeight, node.offsetHeight);
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2, backgroundColor: "#ffffff", cacheBust: true,
+        width: w, height: h,
+        style: { transform: "none", width: `${w}px`, height: `${h}px` },
+      });
       const link = document.createElement("a");
       link.download = `${student.name || "marksheet-9-10"}-${Date.now()}.png`;
       link.href = dataUrl;
