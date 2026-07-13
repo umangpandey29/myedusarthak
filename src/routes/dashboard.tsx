@@ -17,9 +17,10 @@ function Dashboard() {
   const latest = reports[0];
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-blue-50 via-white to-emerald-50">
       <AppSidebar />
-      <main className="flex-1 p-6 lg:p-8">
+      <main className="flex-1 p-4 lg:p-8 min-w-0">
+
         <section className="rounded-2xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-8 shadow-lg mb-6">
           <h1 className="text-3xl font-bold mb-2">Hello, Teacher <span className="inline-block">👋</span></h1>
           <p className="text-white/90 text-sm mb-5">Welcome back. Reports are now stored in your account.</p>

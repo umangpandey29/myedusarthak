@@ -57,7 +57,14 @@ function CreateMiddle() {
     setSaving(true);
     try {
       const { toPng } = await import("html-to-image");
-      const dataUrl = await toPng(sheetRef.current, { pixelRatio: 2, backgroundColor: "#ffffff", cacheBust: true });
+      const node = sheetRef.current;
+      const w = Math.max(node.scrollWidth, node.offsetWidth);
+      const h = Math.max(node.scrollHeight, node.offsetHeight);
+      const dataUrl = await toPng(node, {
+        pixelRatio: 2, backgroundColor: "#ffffff", cacheBust: true,
+        width: w, height: h,
+        style: { transform: "none", width: `${w}px`, height: `${h}px` },
+      });
       const link = document.createElement("a");
       link.download = `${student.name || "marksheet"}-${Date.now()}.png`;
       link.href = dataUrl;
@@ -74,9 +81,10 @@ function CreateMiddle() {
   };
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <AppSidebar />
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 lg:p-6 min-w-0">
+
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <h1 className="text-xl font-semibold">Create Report — Classes 6–8</h1>
           <div className="flex gap-2">
@@ -88,6 +96,7 @@ function CreateMiddle() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
+
           <div className="space-y-6">
             <section className="bg-card rounded-xl p-5 border border-border">
               <h2 className="font-semibold text-primary mb-4 text-sm tracking-wide">1. STUDENT RECORDS</h2>
@@ -145,9 +154,12 @@ function CreateMiddle() {
             </section>
           </div>
 
-          <div>
-            <MarksheetMiddle ref={sheetRef} student={student} marks={marks} />
+          <div className="overflow-x-auto -mx-6 px-6 xl:mx-0 xl:px-0">
+            <div className="min-w-[900px]">
+              <MarksheetMiddle ref={sheetRef} student={student} marks={marks} />
+            </div>
           </div>
+
         </div>
       </main>
     </div>

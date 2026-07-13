@@ -9,9 +9,10 @@ export const Route = createFileRoute("/")({
 
 function ChoosePage() {
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-blue-50 via-white to-emerald-50">
       <AppSidebar />
-      <main className="flex-1 p-6 lg:p-10">
+      <main className="flex-1 p-4 lg:p-10 min-w-0">
+
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold mb-2">Create a Report Card</h1>
           <p className="text-sm text-muted-foreground mb-8">Choose the class level to start.</p>
