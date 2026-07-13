@@ -65,9 +65,10 @@ function CreateHigh() {
   const khelGrade = autoGradeHigh(totals(HIGH_KHEL_INDEX).totalObtained, totals(HIGH_KHEL_INDEX).totalMax);
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       <AppSidebar />
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-4 lg:p-6 min-w-0">
+
         <div className="flex items-center justify-between mb-6 gap-4 flex-wrap">
           <h1 className="text-xl font-semibold">Create Report — Classes 9–10</h1>
           <div className="flex gap-2">
