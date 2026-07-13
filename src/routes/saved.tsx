@@ -39,9 +39,10 @@ function SavedPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-blue-50 via-white to-emerald-50">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-gradient-to-br from-blue-50 via-white to-emerald-50">
       <AppSidebar />
-      <main className="flex-1 p-6 lg:p-8">
+      <main className="flex-1 p-4 lg:p-8 min-w-0">
+
         <div className="flex items-start justify-between gap-4 flex-wrap mb-6">
           <div>
             <h1 className="text-3xl font-bold">Saved Reports</h1>
