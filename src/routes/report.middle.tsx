@@ -152,9 +152,12 @@ function CreateMiddle() {
             </section>
           </div>
 
-          <div>
-            <MarksheetMiddle ref={sheetRef} student={student} marks={marks} />
+          <div className="overflow-x-auto -mx-6 px-6 xl:mx-0 xl:px-0">
+            <div className="min-w-[900px]">
+              <MarksheetMiddle ref={sheetRef} student={student} marks={marks} />
+            </div>
           </div>
+
         </div>
       </main>
     </div>
