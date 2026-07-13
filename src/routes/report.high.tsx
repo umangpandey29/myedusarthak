@@ -146,9 +146,12 @@ function CreateHigh() {
             </section>
           </div>
 
-          <div>
-            <MarksheetHigh ref={sheetRef} student={student} rows={rows} />
+          <div className="overflow-x-auto -mx-6 px-6 xl:mx-0 xl:px-0">
+            <div className="min-w-[900px]">
+              <MarksheetHigh ref={sheetRef} student={student} rows={rows} />
+            </div>
           </div>
+
         </div>
       </main>
     </div>
