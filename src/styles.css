@@ -26,78 +26,90 @@
   --color-ring: var(--ring);
   --color-sheet: var(--sheet);
   --color-sheet-foreground: var(--sheet-foreground);
+  --color-destructive: var(--destructive);
 }
 
+/* Midnight Indigo — Arc/Framer premium dark theme */
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.985 0.005 240);
-  --foreground: oklch(0.2 0.03 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 250);
-  --primary: oklch(0.62 0.17 175);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.95 0.02 240);
-  --secondary-foreground: oklch(0.25 0.03 250);
-  --muted: oklch(0.96 0.01 240);
-  --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.95 0.03 200);
-  --accent-foreground: oklch(0.25 0.03 250);
-  --border: oklch(0.9 0.01 240);
-  --input: oklch(0.92 0.01 240);
-  --ring: oklch(0.62 0.17 175);
+  --radius: 0.9rem;
+  --background: oklch(0.14 0.03 275);
+  --foreground: oklch(0.97 0.01 260);
+  --card: oklch(0.19 0.035 275);
+  --card-foreground: oklch(0.97 0.01 260);
+  --primary: oklch(0.72 0.17 285);          /* electric indigo #818cf8-ish */
+  --primary-foreground: oklch(0.14 0.03 275);
+  --secondary: oklch(0.24 0.04 275);
+  --secondary-foreground: oklch(0.95 0.01 260);
+  --muted: oklch(0.22 0.03 275);
+  --muted-foreground: oklch(0.7 0.03 270);
+  --accent: oklch(0.32 0.09 285);
+  --accent-foreground: oklch(0.97 0.01 260);
+  --border: oklch(0.28 0.04 275);
+  --input: oklch(0.24 0.035 275);
+  --ring: oklch(0.72 0.17 285);
+  --destructive: oklch(0.62 0.22 25);
   --sheet: #ffffff;
   --sheet-foreground: #0d0d0d;
+
+  --grad-hero: radial-gradient(1200px 500px at 10% -10%, oklch(0.4 0.18 285 / 0.55), transparent 60%),
+               radial-gradient(900px 400px at 100% 0%, oklch(0.35 0.14 260 / 0.5), transparent 55%),
+               linear-gradient(160deg, oklch(0.19 0.05 275), oklch(0.14 0.03 275));
+  --grad-primary: linear-gradient(135deg, oklch(0.72 0.17 285), oklch(0.65 0.2 260));
+  --shadow-glow: 0 20px 60px -20px oklch(0.55 0.2 285 / 0.55);
+  --shadow-card: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 20px 40px -24px oklch(0 0 0 / 0.6);
 }
 
 @layer base {
   * { border-color: var(--color-border); }
+  html, body { background: var(--color-background); color: var(--color-foreground); }
   body {
-    background: linear-gradient(180deg, oklch(0.98 0.01 220), oklch(0.96 0.02 200));
-    color: var(--color-foreground);
-    font-family: ui-sans-serif, system-ui, sans-serif;
+    background:
+      radial-gradient(1000px 600px at 0% 0%, oklch(0.28 0.12 285 / 0.35), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, oklch(0.24 0.1 260 / 0.35), transparent 55%),
+      linear-gradient(180deg, oklch(0.14 0.03 275), oklch(0.12 0.03 275));
+    background-attachment: fixed;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
+  h1, h2, h3, h4 { letter-spacing: -0.01em; }
 }
 
-/* Marksheet specific styles */
-.marksheet {
-  background: #ffffff !important;
-  background-color: #ffffff !important;
-  color: var(--color-sheet-foreground);
-  font-family: "Noto Sans Devanagari", "Mangal", serif;
+/* ----- Premium utility utilities ----- */
+@utility glass {
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.05), oklch(1 0 0 / 0.02));
+  border: 1px solid oklch(1 0 0 / 0.08);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: var(--shadow-card);
 }
-.marksheet *, .marksheet-high * {
-  background-image: none !important;
+@utility glass-strong {
+  background: linear-gradient(180deg, oklch(1 0 0 / 0.09), oklch(1 0 0 / 0.03));
+  border: 1px solid oklch(1 0 0 / 0.12);
+  backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--shadow-card);
 }
-.marksheet table { border-collapse: collapse; width: 100%; }
-.marksheet th, .marksheet td {
-  border: 1.5px solid #000;
-  padding: 4px 6px;
-  text-align: center;
-  font-size: 11px;
-  vertical-align: middle;
-  color: #000;
+@utility hero-grad { background: var(--grad-hero); }
+@utility primary-grad { background: var(--grad-primary); }
+@utility glow { box-shadow: var(--shadow-glow); }
+@utility text-gradient {
+  background: linear-gradient(135deg, oklch(0.85 0.14 285), oklch(0.78 0.14 220));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
-.marksheet th { font-weight: 700; background: #ffffff; }
-.marksheet .subj { text-align: left; padding-left: 6px; font-size: 11px; }
-.marksheet .totals { color: #b91c1c; font-weight: 700; }
-.marksheet .vertical {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  white-space: nowrap;
-  padding: 6px 2px;
-  font-size: 10px;
-  min-height: 80px;
-}
-.marksheet .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
 
-/* High-school (9-10) variant */
-.marksheet-high {
+@keyframes fade-up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@utility animate-fade-up { animation: fade-up 0.45s ease-out both; }
+
+/* ----- Marksheet (report card) — MUST stay pure white for downloads ----- */
+.marksheet, .marksheet-high {
   background: #ffffff !important;
   background-color: #ffffff !important;
   color: #0d0d0d;
   font-family: "Noto Sans Devanagari", "Mangal", serif;
 }
-.marksheet-high table { border-collapse: collapse; width: 100%; }
+.marksheet *, .marksheet-high * { background-image: none !important; }
+.marksheet table, .marksheet-high table { border-collapse: collapse; width: 100%; }
+.marksheet th, .marksheet td,
 .marksheet-high th, .marksheet-high td {
   border: 1.5px solid #000;
   padding: 4px 6px;
@@ -106,12 +118,20 @@
   vertical-align: middle;
   color: #000;
 }
-.marksheet-high th { font-weight: 700; background: #ffffff; }
-.marksheet-high .subj { text-align: left; padding-left: 6px; font-size: 11px; }
+.marksheet th, .marksheet-high th { font-weight: 700; background: #ffffff; }
+.marksheet .subj, .marksheet-high .subj { text-align: left; padding-left: 6px; font-size: 11px; }
+.marksheet .totals { color: #b91c1c; font-weight: 700; }
 .marksheet-high .totals { font-weight: 700; }
-.marksheet-high .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
+.marksheet .vertical {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  padding: 6px 2px;
+  font-size: 10px;
+  min-height: 80px;
+}
+.marksheet .dotted, .marksheet-high .dotted { border-bottom: 1px dotted #000; display: inline-block; min-width: 120px; }
 .marksheet th, .marksheet td, .marksheet tr,
 .marksheet-high th, .marksheet-high td, .marksheet-high tr {
   background-color: #ffffff !important;
 }
-
