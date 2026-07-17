@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Trash2, Eye, Calendar, Download, X, FolderOpen } from "lucide-react";
-import { listReports, deleteCloudReport, type CloudReport } from "@/lib/cloudReports";
+import { listReports, deleteCloudReport, REPORTS_QUERY_KEY, type CloudReport } from "@/lib/cloudReports";
 
 export const Route = createFileRoute("/saved")({
   component: SavedPage,
@@ -12,16 +13,15 @@ export const Route = createFileRoute("/saved")({
 });
 
 function SavedPage() {
-  const [reports, setReports] = useState<CloudReport[]>([]);
   const [query, setQuery] = useState("");
   const [viewing, setViewing] = useState<CloudReport | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const refresh = async () => {
-    try { setReports(await listReports()); } catch (e) { console.error(e); }
-    finally { setLoading(false); }
-  };
-  useEffect(() => { refresh(); }, []);
+  const qc = useQueryClient();
+  const { data: reports = [], isLoading: loading } = useQuery({
+    queryKey: REPORTS_QUERY_KEY,
+    queryFn: listReports,
+    refetchOnWindowFocus: true,
+    refetchOnMount: "always",
+  });
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -31,7 +31,7 @@ function SavedPage() {
     );
   }, [reports, query]);
 
-  const remove = async (id: string) => { await deleteCloudReport(id); refresh(); };
+  const remove = async (id: string) => { await deleteCloudReport(id); qc.invalidateQueries({ queryKey: REPORTS_QUERY_KEY }); };
   const download = (r: CloudReport) => {
     const link = document.createElement("a");
     link.href = r.image; link.download = `${r.student_name || "marksheet"}.png`;
