@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
-import { saveCloudReport } from "@/lib/cloudReports";
+import { saveCloudReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
 import { toast } from "sonner";
 import { MarksheetMiddle } from "@/components/MarksheetMiddle";
 import {
@@ -25,6 +26,7 @@ function CreateMiddle() {
   const [marks, setMarks] = useState<SubjectMarks[]>(SUBJECTS.map(emptyMarks));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const qc = useQueryClient();
 
   const rows = useMemo(() => marks.map((m) => {
     const halfObtained = n(m.h1) + n(m.h2) + n(m.hPrac) + n(m.hHalf);
@@ -66,21 +68,25 @@ function CreateMiddle() {
         width: w, height: h,
         style: { transform: "none", width: `${w}px`, height: `${h}px` },
       });
-      const link = document.createElement("a");
-      link.download = `${student.name || "marksheet"}-${Date.now()}.png`;
-      link.href = dataUrl;
-      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      // Save to cloud FIRST — success toast only fires if the DB row is written.
+      let cloudOk = false;
       try {
         await saveCloudReport({
           report_type: "middle",
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
           session: student.session, percentage, image: dataUrl,
         });
-        toast.success("Report saved to your account", { description: "Also downloaded to your device." });
+        cloudOk = true;
+        qc.invalidateQueries({ queryKey: REPORTS_QUERY_KEY });
       } catch (e: any) {
         console.error("Cloud save failed", e);
-        toast.error("Cloud save failed", { description: e?.message || "Downloaded locally, but not saved to your account." });
+        toast.error("Could not save to your account", { description: e?.message || "Please try again." });
       }
+      const link = document.createElement("a");
+      link.download = `${student.name || "marksheet"}-${Date.now()}.png`;
+      link.href = dataUrl;
+      document.body.appendChild(link); link.click(); document.body.removeChild(link);
+      if (cloudOk) toast.success("Report saved", { description: "Stored in your account and downloaded." });
     } catch (err) { console.error(err); toast.error("Could not generate the report image."); }
     finally { setSaving(false); }
   };

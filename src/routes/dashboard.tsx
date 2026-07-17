@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Counter } from "@/components/Counter";
 import { Plus, FileText, Users, TrendingUp, Sparkles, ArrowUpRight, Clock, Activity, BookOpen, GraduationCap } from "lucide-react";
-import { listReports, type CloudReport } from "@/lib/cloudReports";
+import { listReports, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
 import { isToday, isWithinDays, bucketByDay } from "@/lib/analytics";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from "recharts";
 
@@ -14,9 +15,12 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const [reports, setReports] = useState<CloudReport[]>([]);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => { listReports().then(setReports).catch(console.error).finally(() => setLoading(false)); }, []);
+  const { data: reports = [], isLoading: loading } = useQuery({
+    queryKey: REPORTS_QUERY_KEY,
+    queryFn: listReports,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
+  });
 
   const stats = useMemo(() => {
     const classes = new Set(reports.map((r) => r.class_sec).filter(Boolean)).size;

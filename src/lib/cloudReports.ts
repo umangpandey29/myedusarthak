@@ -13,6 +13,9 @@ export type CloudReport = {
   created_at: string;
 };
 
+export const REPORTS_QUERY_KEY = ["reports"] as const;
+export const PROFILES_QUERY_KEY = ["profiles"] as const;
+
 export async function listReports(): Promise<CloudReport[]> {
   const { data, error } = await supabase
     .from("reports")
@@ -30,14 +33,18 @@ export async function saveCloudReport(input: {
   session: string;
   percentage: string;
   image: string;
-}) {
-  const { data: { user } } = await supabase.auth.getUser();
+}): Promise<CloudReport> {
+  const { data: { user }, error: userErr } = await supabase.auth.getUser();
+  if (userErr) throw userErr;
   if (!user) throw new Error("Not authenticated");
-  const { error } = await supabase.from("reports").insert({
-    ...input,
-    user_id: user.id,
-  });
+  const { data, error } = await supabase
+    .from("reports")
+    .insert({ ...input, user_id: user.id })
+    .select("*")
+    .single();
   if (error) throw error;
+  if (!data) throw new Error("Insert returned no row");
+  return data as CloudReport;
 }
 
 export async function deleteCloudReport(id: string) {
