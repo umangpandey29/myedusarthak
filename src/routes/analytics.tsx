@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Counter } from "@/components/Counter";
 import { listAllReports, listProfiles, bucketByDay, type Profile } from "@/lib/analytics";
-import type { CloudReport } from "@/lib/cloudReports";
+import { REPORTS_QUERY_KEY, PROFILES_QUERY_KEY } from "@/lib/cloudReports";
 import { BarChart3, Trophy, Users, FileText, TrendingUp, Medal, Crown, Award } from "lucide-react";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
@@ -22,16 +23,15 @@ type Row = {
 };
 
 function AnalyticsPage() {
-  const [reports, setReports] = useState<CloudReport[]>([]);
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    Promise.all([listAllReports(), listProfiles()])
-      .then(([r, p]) => { setReports(r); setProfiles(p); })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: reports = [], isLoading: l1 } = useQuery({
+    queryKey: REPORTS_QUERY_KEY, queryFn: listAllReports,
+    refetchOnMount: "always", refetchOnWindowFocus: true,
+  });
+  const { data: profiles = [], isLoading: l2 } = useQuery<Profile[]>({
+    queryKey: PROFILES_QUERY_KEY, queryFn: listProfiles,
+    refetchOnMount: "always",
+  });
+  const loading = l1 || l2;
 
   const rows = useMemo<Row[]>(() => {
     const profById = new Map(profiles.map((p) => [p.id, p]));
