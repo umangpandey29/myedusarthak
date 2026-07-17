@@ -96,6 +96,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AuthGate><Outlet /></AuthGate>
+        <Toaster />
       </AuthProvider>
     </QueryClientProvider>
   );
