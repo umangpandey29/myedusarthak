@@ -43,7 +43,6 @@ function CreateHigh() {
         width: w, height: h,
         style: { transform: "none", width: `${w}px`, height: `${h}px` },
       });
-      const link = document.createElement("a");
       let cloudOk = false;
       try {
         await saveCloudReport({
