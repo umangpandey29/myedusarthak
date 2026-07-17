@@ -24,6 +24,7 @@ function CreateHigh() {
   const [rows, setRows] = useState<HighRow[]>(HIGH_SUBJECTS.map(emptyHigh));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const qc = useQueryClient();
 
   const update = (i: number, f: keyof HighRow, v: string) =>
     setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, [f]: v } : r));
