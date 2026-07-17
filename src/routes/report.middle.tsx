@@ -26,6 +26,7 @@ function CreateMiddle() {
   const [marks, setMarks] = useState<SubjectMarks[]>(SUBJECTS.map(emptyMarks));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
+  const qc = useQueryClient();
 
   const rows = useMemo(() => marks.map((m) => {
     const halfObtained = n(m.h1) + n(m.h2) + n(m.hPrac) + n(m.hHalf);
