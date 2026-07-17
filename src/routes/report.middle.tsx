@@ -1,12 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
-import { saveCloudReport } from "@/lib/cloudReports";
+import { saveCloudReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
 import { toast } from "sonner";
 import { MarksheetMiddle } from "@/components/MarksheetMiddle";
 import {
