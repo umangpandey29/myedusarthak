@@ -51,8 +51,12 @@ function CreateHigh() {
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
           session: student.session, percentage: computeHighPercentage(student, rows), image: dataUrl,
         });
-      } catch (e) { console.error("Cloud save failed", e); }
-    } catch (err) { console.error(err); alert("Could not generate image."); }
+        toast.success("Report saved to your account", { description: "Also downloaded to your device." });
+      } catch (e: any) {
+        console.error("Cloud save failed", e);
+        toast.error("Cloud save failed", { description: e?.message || "Downloaded locally, but not saved to your account." });
+      }
+    } catch (err) { console.error(err); toast.error("Could not generate image."); }
     finally { setSaving(false); }
   };
 
