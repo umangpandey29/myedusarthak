@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { saveCloudReport } from "@/lib/cloudReports";
+import { toast } from "sonner";
 import { MarksheetHigh, computeHighPercentage } from "@/components/MarksheetHigh";
 import {
   HIGH_SUBJECTS, HIGH_KHEL_INDEX, emptyHigh, emptyHighStudent,
