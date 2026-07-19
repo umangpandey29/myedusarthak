@@ -89,9 +89,14 @@ function SavedPage() {
                     <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">कुल प्रतिशत</div>
                     <div className="text-2xl font-bold tracking-tight">{r.percentage}<span className="text-sm text-muted-foreground font-normal">%</span></div>
                   </div>
-                  <Button size="sm" onClick={() => setViewing(r)} className="rounded-xl primary-grad text-white hover:opacity-90">
-                    <Eye className="w-3.5 h-3.5 mr-1" />View
-                  </Button>
+                  <div className="flex gap-1.5">
+                    <Button size="sm" variant="outline" onClick={() => edit(r)} className="rounded-xl" aria-label="Edit report">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button size="sm" onClick={() => setViewing(r)} className="rounded-xl primary-grad text-white hover:opacity-90">
+                      <Eye className="w-3.5 h-3.5 mr-1" />View
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
