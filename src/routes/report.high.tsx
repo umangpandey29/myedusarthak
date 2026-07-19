@@ -35,7 +35,19 @@ function CreateHigh() {
         const rec = await getReport(editId);
         if (!rec) { toast.error("Report not found"); return; }
         const d: any = rec.data;
-        if (d?.student) setStudent({ ...emptyHighStudent(), ...d.student });
+        if (d?.student) {
+          setStudent({ ...emptyHighStudent(), ...d.student });
+        } else {
+          // Legacy row (saved before full form state was persisted): hydrate what we have.
+          setStudent((prev) => ({
+            ...prev,
+            name: rec.student_name ?? prev.name,
+            classSec: rec.class_sec ?? prev.classSec,
+            rollNo: rec.roll_no ?? prev.rollNo,
+            session: rec.session ?? prev.session,
+          }));
+          toast.info("Legacy report", { description: "Only basic details could be restored — please re-enter marks." });
+        }
         if (Array.isArray(d?.rows)) setRows(HIGH_SUBJECTS.map((_, i) => ({ ...emptyHigh(), ...(d.rows[i] || {}) })));
       } catch (e: any) {
         toast.error("Could not load report", { description: e?.message });
