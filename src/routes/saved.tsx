@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Eye, Calendar, Download, X, FolderOpen } from "lucide-react";
+import { Search, Trash2, Eye, Calendar, Download, X, FolderOpen, Pencil } from "lucide-react";
 import { listReports, deleteCloudReport, REPORTS_QUERY_KEY, type CloudReport } from "@/lib/cloudReports";
 
 export const Route = createFileRoute("/saved")({
