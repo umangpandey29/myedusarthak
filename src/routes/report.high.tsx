@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
-import { saveCloudReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
+import { saveCloudReport, updateCloudReport, getReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
 import { toast } from "sonner";
 import { MarksheetHigh, computeHighPercentage } from "@/components/MarksheetHigh";
 import {
@@ -16,15 +16,33 @@ import {
 
 export const Route = createFileRoute("/report/high")({
   component: CreateHigh,
+  validateSearch: (s: Record<string, unknown>) => ({ edit: typeof s.edit === "string" ? s.edit : undefined }),
   head: () => ({ meta: [{ title: "Class 9–10 Report — MyEduSarthak" }] }),
 });
 
 function CreateHigh() {
+  const { edit: editId } = useSearch({ from: "/report/high" });
   const [student, setStudent] = useState(emptyHighStudent());
   const [rows, setRows] = useState<HighRow[]>(HIGH_SUBJECTS.map(emptyHigh));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!editId) return;
+    (async () => {
+      try {
+        const rec = await getReport(editId);
+        if (!rec) { toast.error("Report not found"); return; }
+        const d: any = rec.data;
+        if (d?.student) setStudent({ ...emptyHighStudent(), ...d.student });
+        if (Array.isArray(d?.rows)) setRows(HIGH_SUBJECTS.map((_, i) => ({ ...emptyHigh(), ...(d.rows[i] || {}) })));
+      } catch (e: any) {
+        toast.error("Could not load report", { description: e?.message });
+      }
+    })();
+  }, [editId]);
+
 
   const update = (i: number, f: keyof HighRow, v: string) =>
     setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, [f]: v } : r));
