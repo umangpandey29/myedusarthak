@@ -63,11 +63,14 @@ function CreateHigh() {
       });
       let cloudOk = false;
       try {
-        await saveCloudReport({
-          report_type: "high",
+        const payload = {
+          report_type: "high" as const,
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
           session: student.session, percentage: computeHighPercentage(student, rows), image: dataUrl,
-        });
+          data: { student, rows },
+        };
+        if (editId) await updateCloudReport(editId, payload);
+        else await saveCloudReport(payload);
         cloudOk = true;
         qc.invalidateQueries({ queryKey: REPORTS_QUERY_KEY });
       } catch (e: any) {
@@ -78,7 +81,7 @@ function CreateHigh() {
       link.download = `${student.name || "marksheet-9-10"}-${Date.now()}.png`;
       link.href = dataUrl;
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
-      if (cloudOk) toast.success("Report saved", { description: "Stored in your account and downloaded." });
+      if (cloudOk) toast.success(editId ? "Report updated" : "Report saved", { description: "Stored in your account and downloaded." });
     } catch (err) { console.error(err); toast.error("Could not generate image."); }
     finally { setSaving(false); }
   };
