@@ -1,10 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AppSidebar } from "@/components/AppSidebar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Trash2, Eye, Calendar, Download, X, FolderOpen } from "lucide-react";
+import { Search, Trash2, Eye, Calendar, Download, X, FolderOpen, Pencil } from "lucide-react";
 import { listReports, deleteCloudReport, REPORTS_QUERY_KEY, type CloudReport } from "@/lib/cloudReports";
 
 export const Route = createFileRoute("/saved")({
@@ -16,6 +16,11 @@ function SavedPage() {
   const [query, setQuery] = useState("");
   const [viewing, setViewing] = useState<CloudReport | null>(null);
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const edit = (r: CloudReport) => navigate({
+    to: r.report_type === "high" ? "/report/high" : "/report/middle",
+    search: { edit: r.id } as any,
+  });
   const { data: reports = [], isLoading: loading } = useQuery({
     queryKey: REPORTS_QUERY_KEY,
     queryFn: listReports,
@@ -84,9 +89,14 @@ function SavedPage() {
                     <div className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">कुल प्रतिशत</div>
                     <div className="text-2xl font-bold tracking-tight">{r.percentage}<span className="text-sm text-muted-foreground font-normal">%</span></div>
                   </div>
-                  <Button size="sm" onClick={() => setViewing(r)} className="rounded-xl primary-grad text-white hover:opacity-90">
-                    <Eye className="w-3.5 h-3.5 mr-1" />View
-                  </Button>
+                  <div className="flex gap-1.5">
+                    <Button size="sm" variant="outline" onClick={() => edit(r)} className="rounded-xl" aria-label="Edit report">
+                      <Pencil className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button size="sm" onClick={() => setViewing(r)} className="rounded-xl primary-grad text-white hover:opacity-90">
+                      <Eye className="w-3.5 h-3.5 mr-1" />View
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}

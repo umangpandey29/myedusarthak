@@ -1,12 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useRef, useState } from "react";
+import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, RotateCcw, Loader2 } from "lucide-react";
 import { AppSidebar } from "@/components/AppSidebar";
-import { saveCloudReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
+import { saveCloudReport, updateCloudReport, getReport, REPORTS_QUERY_KEY } from "@/lib/cloudReports";
 import { toast } from "sonner";
 import { MarksheetHigh, computeHighPercentage } from "@/components/MarksheetHigh";
 import {
@@ -16,15 +16,33 @@ import {
 
 export const Route = createFileRoute("/report/high")({
   component: CreateHigh,
+  validateSearch: (s: Record<string, unknown>) => ({ edit: typeof s.edit === "string" ? s.edit : undefined }),
   head: () => ({ meta: [{ title: "Class 9–10 Report — MyEduSarthak" }] }),
 });
 
 function CreateHigh() {
+  const { edit: editId } = useSearch({ from: "/report/high" });
   const [student, setStudent] = useState(emptyHighStudent());
   const [rows, setRows] = useState<HighRow[]>(HIGH_SUBJECTS.map(emptyHigh));
   const [saving, setSaving] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
   const qc = useQueryClient();
+
+  useEffect(() => {
+    if (!editId) return;
+    (async () => {
+      try {
+        const rec = await getReport(editId);
+        if (!rec) { toast.error("Report not found"); return; }
+        const d: any = rec.data;
+        if (d?.student) setStudent({ ...emptyHighStudent(), ...d.student });
+        if (Array.isArray(d?.rows)) setRows(HIGH_SUBJECTS.map((_, i) => ({ ...emptyHigh(), ...(d.rows[i] || {}) })));
+      } catch (e: any) {
+        toast.error("Could not load report", { description: e?.message });
+      }
+    })();
+  }, [editId]);
+
 
   const update = (i: number, f: keyof HighRow, v: string) =>
     setRows((prev) => prev.map((r, idx) => idx === i ? { ...r, [f]: v } : r));
@@ -45,11 +63,14 @@ function CreateHigh() {
       });
       let cloudOk = false;
       try {
-        await saveCloudReport({
-          report_type: "high",
+        const payload = {
+          report_type: "high" as const,
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
           session: student.session, percentage: computeHighPercentage(student, rows), image: dataUrl,
-        });
+          data: { student, rows },
+        };
+        if (editId) await updateCloudReport(editId, payload);
+        else await saveCloudReport(payload);
         cloudOk = true;
         qc.invalidateQueries({ queryKey: REPORTS_QUERY_KEY });
       } catch (e: any) {
@@ -60,7 +81,7 @@ function CreateHigh() {
       link.download = `${student.name || "marksheet-9-10"}-${Date.now()}.png`;
       link.href = dataUrl;
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
-      if (cloudOk) toast.success("Report saved", { description: "Stored in your account and downloaded." });
+      if (cloudOk) toast.success(editId ? "Report updated" : "Report saved", { description: "Stored in your account and downloaded." });
     } catch (err) { console.error(err); toast.error("Could not generate image."); }
     finally { setSaving(false); }
   };
