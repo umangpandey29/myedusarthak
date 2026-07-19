@@ -16,6 +16,11 @@ function SavedPage() {
   const [query, setQuery] = useState("");
   const [viewing, setViewing] = useState<CloudReport | null>(null);
   const qc = useQueryClient();
+  const navigate = useNavigate();
+  const edit = (r: CloudReport) => navigate({
+    to: r.report_type === "high" ? "/report/high" : "/report/middle",
+    search: { edit: r.id } as any,
+  });
   const { data: reports = [], isLoading: loading } = useQuery({
     queryKey: REPORTS_QUERY_KEY,
     queryFn: listReports,
