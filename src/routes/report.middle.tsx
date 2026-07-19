@@ -88,11 +88,14 @@ function CreateMiddle() {
       // Save to cloud FIRST — success toast only fires if the DB row is written.
       let cloudOk = false;
       try {
-        await saveCloudReport({
-          report_type: "middle",
+        const payload = {
+          report_type: "middle" as const,
           student_name: student.name, class_sec: student.classSec, roll_no: student.rollNo,
           session: student.session, percentage, image: dataUrl,
-        });
+          data: { student, marks },
+        };
+        if (editId) await updateCloudReport(editId, payload);
+        else await saveCloudReport(payload);
         cloudOk = true;
         qc.invalidateQueries({ queryKey: REPORTS_QUERY_KEY });
       } catch (e: any) {
@@ -103,7 +106,7 @@ function CreateMiddle() {
       link.download = `${student.name || "marksheet"}-${Date.now()}.png`;
       link.href = dataUrl;
       document.body.appendChild(link); link.click(); document.body.removeChild(link);
-      if (cloudOk) toast.success("Report saved", { description: "Stored in your account and downloaded." });
+      if (cloudOk) toast.success(editId ? "Report updated" : "Report saved", { description: "Stored in your account and downloaded." });
     } catch (err) { console.error(err); toast.error("Could not generate the report image."); }
     finally { setSaving(false); }
   };
