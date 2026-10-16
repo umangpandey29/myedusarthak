@@ -104,7 +104,7 @@ function Dashboard() {
 
           <div className="glass rounded-2xl p-6 flex flex-col gap-3">
             <h2 className="text-sm font-semibold mb-1">Quick Start</h2>
-            <Link to="/report/middle" search={{}} className="group glass rounded-xl p-4 hover:bg-white/[0.06] transition-colors flex items-center gap-3">
+            <Link to="/report/middle" search={{ edit: undefined }} className="group glass rounded-xl p-4 hover:bg-white/[0.06] transition-colors flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-amber-500/15 text-amber-300 flex items-center justify-center"><BookOpen className="w-4 h-4" /></div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium">Classes 6 – 8</div>
@@ -112,7 +112,7 @@ function Dashboard() {
               </div>
               <ArrowUpRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
             </Link>
-            <Link to="/report/high" search={{}} className="group glass rounded-xl p-4 hover:bg-white/[0.06] transition-colors flex items-center gap-3">
+            <Link to="/report/high" search={{ edit: undefined }} className="group glass rounded-xl p-4 hover:bg-white/[0.06] transition-colors flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-primary/15 text-primary flex items-center justify-center"><GraduationCap className="w-4 h-4" /></div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-medium">Classes 9 – 10</div>
