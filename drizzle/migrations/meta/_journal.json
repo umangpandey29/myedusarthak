@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1792161285339,
+      "tag": "0000_cascade_user_roles_on_account_delete",
+      "breakpoints": true
+    }
+  ]
+}
