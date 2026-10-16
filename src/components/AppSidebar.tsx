@@ -1,5 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { FileText, LayoutDashboard, FolderOpen, LogOut, Menu, X, BarChart3, Sparkles } from "lucide-react";
+import { FileText, LayoutDashboard, FolderOpen, LogOut, Menu, X, BarChart3, Sparkles, Settings } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -8,6 +8,7 @@ const items = [
   { to: "/", label: "Create Report", icon: FileText },
   { to: "/saved", label: "Saved Reports", icon: FolderOpen },
   { to: "/analytics", label: "Teacher Analytics", icon: BarChart3 },
+  { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
 
 export function AppSidebar() {
