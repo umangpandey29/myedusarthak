@@ -25,6 +25,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { deleteOwnAccount } from "@/lib/account.functions";
 
 export const Route = createFileRoute("/settings")({
@@ -42,6 +43,7 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
+  const { user } = useAuth();
   const deleteAccount = useServerFn(deleteOwnAccount);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -79,6 +81,7 @@ function SettingsPage() {
           </div>
           <h1 className="text-4xl font-bold tracking-tight">Settings</h1>
           <p className="text-sm text-muted-foreground mt-1">Manage your account.</p>
+          {user?.email && <p className="text-xs text-muted-foreground mt-2">Signed in as {user.email}</p>}
         </div>
 
         <section aria-labelledby="danger-zone-title" className="max-w-3xl border border-destructive/30 bg-destructive/5 rounded-xl p-5 sm:p-7">
